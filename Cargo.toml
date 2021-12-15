@@ -1,0 +1,12 @@
+[package]
+name = "bard"
+version = "0.1.0"
+authors = ["msyfls123 <msyfls123@gmail.com>"]
+edition = "2018"
+
+[[bin]]
+name = "main"
+path = "server/main.rs"
+
+[dependencies]
+rocket = "0.5.0-rc.1"
