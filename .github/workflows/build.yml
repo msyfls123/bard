@@ -1,0 +1,33 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Setup toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-unknown-linux-musl
+          override: true
+
+      - name: Cargo Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target x86_64-unknown-linux-musl --release
+
+      - name: Run
+        run: ./script/run_on_ci.sh
+
+      - name: Archive debug artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            target/x86_64-unknown-linux-musl/release/main
