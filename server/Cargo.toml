@@ -1,21 +1,15 @@
 [package]
-name = "bard"
+name = "bard-server"
 version = "0.1.0"
 authors = ["msyfls123 <msyfls123@gmail.com>"]
-description = "Built as totally Rust application."
+description = "Built as binary application with Rocket."
 repository = "https://github.com/msyfls123/bard"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 
-[workspace]
-members = [
-  "server",
-  "client",
-]
+[[bin]]
+name = "server"
+path = "src/main.rs"
 
-default-members = [
-  "server",
-  "client",
-]
-
-[lib]
+[dependencies]
+rocket = "0.5.0-rc.1"

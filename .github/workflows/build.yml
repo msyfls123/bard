@@ -16,11 +16,19 @@ jobs:
           target: x86_64-unknown-linux-musl
           override: true
 
+      - name: Setup wasm-pack
+        uses: jetli/wasm-pack-action@v0.3.0
+        with:
+          version: 'latest'
+
+      - name: Build static files
+        run: ./script/build_client.sh
+
       - name: Cargo Build
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --target x86_64-unknown-linux-musl --release
+          args: --bin server --target x86_64-unknown-linux-musl --release
 
       - name: Run
         run: ./script/run_on_ci.sh
@@ -30,4 +38,6 @@ jobs:
         with:
           name: build
           path: |
-            target/x86_64-unknown-linux-musl/release/main
+            target/x86_64-unknown-linux-musl/release/server
+            static/
+            !static/.gitignore
