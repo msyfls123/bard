@@ -4,7 +4,6 @@ version = "0.1.0"
 authors = ["msyfls123 <msyfls123@gmail.com>"]
 description = "Built as binary application with Rocket."
 repository = "https://github.com/msyfls123/bard"
-license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [[bin]]

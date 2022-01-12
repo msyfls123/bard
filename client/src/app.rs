@@ -32,6 +32,10 @@ impl Component for App {
               <p>{ "count " } { self.value } </p>
               <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
               <p>{ "Hello world!" }</p>
+              <form method="post" enctype="multipart/form-data" action="/upload">
+                <input type="file" name="file"/>
+                <button type="submit">{"Submit"}</button>
+              </form>
             </div>
         }
     }
