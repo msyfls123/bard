@@ -1,13 +1,17 @@
 #[macro_use] extern crate rocket;
 
+use std::collections::BTreeMap;
 use rocket::fs::{FileServer, TempFile};
+use rocket_dyn_templates::Template;
 use std::{path::{PathBuf}};
 use std::time::{SystemTime, UNIX_EPOCH};
 use rocket::form::Form;
 
 #[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+fn index() -> Template {
+    let mut data = BTreeMap::new();
+    data.insert("name".to_string(), "kimi".to_string());
+    Template::render("index", &data)
 }
 
 #[derive(FromForm)]
@@ -39,6 +43,7 @@ async fn upload(mut payload: Form<MyForm<'_>>) -> std::io::Result<String> {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
+        .attach(Template::fairing())
         .mount("/", routes![index, upload])
         .mount("/public", FileServer::from("static/"))
 }
