@@ -13,7 +13,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: x86_64-unknown-linux-musl
           override: true
 
       - name: Setup wasm-pack
@@ -28,7 +27,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --bin server --target x86_64-unknown-linux-musl --release
+          args: --bin server --release
 
       - name: Run
         run: ./script/run_on_ci.sh
@@ -38,6 +37,7 @@ jobs:
         with:
           name: build
           path: |
-            target/x86_64-unknown-linux-musl/release/server
+            target/release/server
+            server/templates
             static/
             !static/.gitignore
