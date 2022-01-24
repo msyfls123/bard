@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use rocket::State;
 use rocket_dyn_templates::Template;
 use rocket::form::{Form};
+use rocket::serde::json::Json;
 use serde_json::value::Value;
 
 use crate::state::AppState;
@@ -42,4 +43,14 @@ pub fn get_vertex(state: &State<AppState>) -> Template {
     let mut data = BTreeMap::new();
     data.insert("texts".to_string(), texts);
     Template::render("vertex", &data)
+}
+
+#[post("/vertex", format="json", data="<obj>")]
+pub fn create_vertex(state: &State<AppState>, obj: Json<Value>) -> Json<Value> {
+    let data = obj.into_inner();
+    let response = json!({
+        "code": 0u32,
+        "res": data["name"]
+    });
+    Json(response)
 }

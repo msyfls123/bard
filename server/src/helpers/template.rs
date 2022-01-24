@@ -1,12 +1,12 @@
 use rocket::fairing::Fairing;
 
-use handlebars::{Handlebars, HelperDef, RenderContext, Helper, Context, JsonRender, HelperResult, Output, RenderError};
+use handlebars::{Handlebars, RenderContext, Helper, Context, HelperResult, Output};
 
 extern crate rocket_dyn_templates;
 
 use rocket_dyn_templates::Template;
 
-fn debug_helper (h: &Helper, _: &Handlebars, _: &Context, rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+fn debug_helper (h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
   let param = h.param(0).unwrap();
 
   out.write("debug >>> ")?;

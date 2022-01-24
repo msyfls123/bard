@@ -1,4 +1,5 @@
 #[macro_use] extern crate rocket;
+#[macro_use] extern crate serde_json;
 
 use std::collections::BTreeMap;
 use rocket::fs::{FileServer};
