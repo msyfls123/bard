@@ -1,7 +1,7 @@
 use indradb::{
   RocksdbDatastore, Datastore,
   Vertex, Result, BulkInsertItem,
-  Identifier, PropertyPresenceVertexQuery, VertexProperties,
+  Identifier, VertexProperties, RangeVertexQuery,
 };
 use serde_json::value::Value;
 
@@ -16,7 +16,6 @@ impl GraphStore {
           None => "./store",
         };
         let store = RocksdbDatastore::new(db_path, None).unwrap();
-        store.index_property(Identifier::new("love").unwrap());
 
         Self {
           store
@@ -43,7 +42,7 @@ impl GraphStore {
     }
 
     pub fn get_all_vertices(&self) -> Vec<VertexProperties> {
-      let vertex_query = PropertyPresenceVertexQuery::new(Identifier::new("love").unwrap());
+      let vertex_query = RangeVertexQuery::new().limit(4);
       self.store.get_all_vertex_properties(vertex_query.into()).unwrap()
     }
 }

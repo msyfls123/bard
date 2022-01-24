@@ -39,7 +39,6 @@ pub fn get_vertex(state: &State<AppState>) -> Template {
         });
         item
     }).collect();
-    println!("{:?}", texts);
     let mut data = BTreeMap::new();
     data.insert("texts".to_string(), texts);
     Template::render("vertex", &data)
