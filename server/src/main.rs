@@ -2,7 +2,7 @@
 #[macro_use] extern crate serde_json;
 
 use std::collections::BTreeMap;
-use rocket::fs::{FileServer};
+use rocket::fs::{FileServer, Options};
 use rocket_dyn_templates::Template;
 
 mod store;
@@ -30,5 +30,5 @@ fn rocket() -> _ {
             routes![index],
             view::get_routes(),
         ].concat())
-        .mount("/public", FileServer::from("static/"))
+        .mount("/public", FileServer::new("static/", Options::NormalizeDirs | Options::Index))
 }
