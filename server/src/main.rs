@@ -7,6 +7,7 @@ use rocket_dyn_templates::Template;
 mod store;
 mod view;
 mod state;
+mod helpers;
 
 use state::AppState;
 
@@ -23,7 +24,7 @@ fn rocket() -> _ {
         .manage(AppState {
             graph_store: store::GraphStore::new(None)
         })
-        .attach(Template::fairing())
+        .attach(helpers::template::get_template())
         .mount("/", [
             routes![index],
             view::get_routes(),
