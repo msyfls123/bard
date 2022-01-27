@@ -1,0 +1,30 @@
+{
+  "name": "bard",
+  "version": "0.1.0",
+  "description": "Development config.",
+  "main": "index.js",
+  "scripts": {
+    "compile": "rollup -c rollup.config.js",
+    "watch": "rollup --watch -c rollup.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msyfls123/bard.git"
+  },
+  "keywords": [
+    "rollup",
+    "rust"
+  ],
+  "author": "msyfls123",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/msyfls123/bard/issues"
+  },
+  "homepage": "https://github.com/msyfls123/bard#readme",
+  "devDependencies": {
+    "@rollup/plugin-replace": "^3.0.1",
+    "@wasm-tool/rollup-plugin-rust": "^1.0.7",
+    "rollup": "^2.66.1",
+    "rollup-plugin-livereload": "^2.0.5"
+  }
+}
