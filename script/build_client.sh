@@ -1,3 +1,7 @@
 rm -rf static
-wasm-pack build client --target web --out-name client --out-dir ../static
-cp -R client/static/ static/
+
+if [ "$1" == "-w" ]; then
+    npm run --prefix client watch
+else
+    npm run --prefix client compile
+fi
