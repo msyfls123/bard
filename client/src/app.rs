@@ -1,5 +1,7 @@
 use yew::{prelude::*, virtual_dom::VNode};
 
+use crate::component::graph::Graph;
+
 pub struct App {
     value: i64,
 }
@@ -36,6 +38,7 @@ impl Component for App {
                 <input type="file" name="file"/>
                 <button type="submit">{"Submit"}</button>
               </form>
+              <Graph/>
             </div>
         }
     }

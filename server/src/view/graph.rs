@@ -28,8 +28,8 @@ pub async fn post_vertex(state: &State<AppState>, form: Form<VertexForm<'_>>) ->
     }
 }
 
-#[get("/vertex")]
-pub fn get_vertex(state: &State<AppState>) -> Template {
+#[get("/vertex", format="any", rank=1)]
+pub fn vertex_list(state: &State<AppState>) -> Template {
     let vertices = state.graph_store.get_all_vertices();
     let texts: Vec<BTreeMap<String, _>> = vertices.iter().map(|v| {
         let mut item = BTreeMap::new();
@@ -73,4 +73,26 @@ pub fn create_vertex(state: &State<AppState>, obj: Json<CreateVertexPayload>) ->
         }
     }
     
+}
+
+#[get("/vertex", format="json")]
+pub fn get_vertex(state: &State<AppState>) -> Json<Value> {
+    let vertices = state.graph_store.get_all_vertices();
+    let texts: Vec<BTreeMap<String, _>> = vertices.iter().map(|v| {
+        let mut item = BTreeMap::new();
+        item.insert(String::from("id"), Value::String(v.vertex.id.to_hyphenated().to_string()));
+        item.insert(String::from("type"), Value::String(v.vertex.t.as_str().to_owned()));
+        v.props.iter().for_each(|p| {
+            let cloned = p.to_owned();
+            item.insert(cloned.name.to_string(), cloned.value);
+        });
+        item
+    }).collect();
+    let mut data = BTreeMap::new();
+    data.insert("vertices".to_string(), texts);
+    let response = json!({
+        "code": 0u32,
+        "data": data,
+    });
+    Json(response)
 }

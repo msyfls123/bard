@@ -1,8 +1,12 @@
+#[macro_use] extern crate serde_json;
+
 use wasm_bindgen::prelude::*;
 use web_sys::{console, window};
 use js_sys::{Reflect};
 
 mod app;
+mod component;
+mod helpers;
 
 #[wasm_bindgen()]
 pub fn log(name: &str) {
