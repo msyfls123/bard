@@ -2,9 +2,10 @@ use indradb::{
   RocksdbDatastore, Datastore,
   Vertex, Result as DbResult, BulkInsertItem,
   Identifier, VertexProperties, RangeVertexQuery,
-  Error as DbError,
+  Error as DbError, EdgeKey, EdgeProperties, SpecificVertexQuery, VertexQueryExt,
 };
-use serde_json::value::{Value};
+use serde_json::value::Value;
+use serde_json::Map;
 use uuid::{Uuid};
 
 pub struct GraphStore {
@@ -24,6 +25,7 @@ impl GraphStore {
         }
     }
 
+    #[deprecated]
     pub fn insert(&self, name: &str, love: &str) -> DbResult<String> {
       let vertex = Vertex::new(Identifier::new(name).unwrap());
       let vertex_id = vertex.id;
@@ -43,13 +45,13 @@ impl GraphStore {
 
     }
 
-    pub fn create_vertex(&self, t: Value, properties: Option<Value>) -> DbResult<Uuid> {
+    pub fn create_vertex(&self, t: Value, properties: Option<Map<String, Value>>) -> DbResult<Uuid> {
       match t.as_str() {
         Some(str) => {
           let uuid = self.store.create_vertex_from_type(Identifier::new(str).unwrap()).unwrap();
           match properties {
             Some(obj) => {
-              let item_list: Vec<_> = obj.as_object().unwrap().iter().map(|(key, value)| {
+              let item_list: Vec<_> = obj.iter().map(|(key, value)| {
                 BulkInsertItem::VertexProperty(
                   uuid,
                   Identifier::new(key).unwrap(),
@@ -69,5 +71,39 @@ impl GraphStore {
     pub fn get_all_vertices(&self) -> Vec<VertexProperties> {
       let vertex_query = RangeVertexQuery::new();
       self.store.get_all_vertex_properties(vertex_query.into()).unwrap()
+    }
+
+    pub fn create_edge(
+      &self,
+      t: &str, outbound_id: Uuid, inbound_id: Uuid, properties: Option<Map<String, Value>>,
+    ) -> DbResult<bool> {
+      let edge_key = EdgeKey::new(outbound_id, Identifier::new(t).unwrap(), inbound_id);
+      match self.store.create_edge(&edge_key) {
+        Ok(result) => {
+          if result {
+            match properties {
+              Some(obj) => {
+                let item_list: Vec<_> = obj.iter().map(|(key, value)| {
+                  BulkInsertItem::EdgeProperty(
+                    edge_key.to_owned(),
+                    Identifier::new(key).unwrap(),
+                    value.clone(),
+                  )
+                }).collect();
+                self.store.bulk_insert(item_list).map(|_| true)
+              },
+              _ => Ok(true)
+            }
+          } else {
+            Ok(result)
+          }
+        },
+        Err(e) => Err(e)
+      }
+    }
+
+    pub fn get_all_edges(&self, t: &str, vertex_id: Uuid) -> Vec<EdgeProperties> {
+      let edge_query = SpecificVertexQuery::single(vertex_id).outbound().t(Identifier::new(t).unwrap());
+      self.store.get_all_edge_properties(edge_query.into()).unwrap()
     }
 }

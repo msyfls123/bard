@@ -9,6 +9,8 @@ pub fn get_routes() -> Vec<Route> {
     graph::get_vertex,
     graph::post_vertex,
     graph::create_vertex,
+    graph::create_edge,
+    graph::get_edge,
     file::upload,
   }
 }

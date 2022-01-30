@@ -5,7 +5,9 @@ use rocket_dyn_templates::Template;
 use rocket::form::{Form};
 use rocket::serde::json::Json;
 use serde_json::value::Value;
+use serde_json::Map;
 use serde::{Deserialize};
+use uuid::Uuid;
 
 use crate::state::AppState;
 
@@ -15,6 +17,7 @@ pub struct VertexForm<'v> {
     love: &'v str,
 }
 
+#[deprecated]
 #[post("/vertex", format="form", data="<form>")]
 pub async fn post_vertex(state: &State<AppState>, form: Form<VertexForm<'_>>) -> Result<String, String> {
     let name = form.name;
@@ -28,6 +31,7 @@ pub async fn post_vertex(state: &State<AppState>, form: Form<VertexForm<'_>>) ->
     }
 }
 
+#[deprecated]
 #[get("/vertex", format="any", rank=1)]
 pub fn vertex_list(state: &State<AppState>) -> Template {
     let vertices = state.graph_store.get_all_vertices();
@@ -49,7 +53,7 @@ pub fn vertex_list(state: &State<AppState>) -> Template {
 #[derive(Deserialize)]
 pub struct CreateVertexPayload {
     t: Value,
-    properties: Option<Value>
+    properties: Option<Map<String, Value>>
 }
 
 #[post("/vertex", format="json", data="<obj>")]
@@ -82,10 +86,12 @@ pub fn get_vertex(state: &State<AppState>) -> Json<Value> {
         let mut item = BTreeMap::new();
         item.insert(String::from("id"), Value::String(v.vertex.id.to_hyphenated().to_string()));
         item.insert(String::from("type"), Value::String(v.vertex.t.as_str().to_owned()));
+        let mut props = Map::new();
         v.props.iter().for_each(|p| {
             let cloned = p.to_owned();
-            item.insert(cloned.name.to_string(), cloned.value);
+            props.insert(cloned.name.to_string(), cloned.value);
         });
+        item.insert(String::from("props"), Value::Object(props));
         item
     }).collect();
     let mut data = BTreeMap::new();
@@ -96,3 +102,72 @@ pub fn get_vertex(state: &State<AppState>) -> Json<Value> {
     });
     Json(response)
 }
+
+#[derive(Deserialize)]
+pub struct CreateEdgePayload {
+    t: String,
+    outbound_id: Uuid,
+    inbound_id: Uuid,
+    properties: Option<Map<String, Value>>
+}
+
+#[post("/edge/create", format="json", data="<payload>")]
+pub fn create_edge(state: &State<AppState>, payload: Json<CreateEdgePayload>) -> Json<Value> {
+    let data = payload.into_inner();
+    let result = state.graph_store.create_edge(&data.t, data.outbound_id, data.inbound_id, data.properties);
+    match result {
+        Ok(true) => {
+            let response = json!({
+                "code": 0u32,
+            });
+            Json(response)
+        },
+        Ok(false) => {
+            let response = json!({
+                "code": 1u32,
+                "err": "failed to create edge",
+            });
+            Json(response)
+        },
+        Err(err) => {
+            let response = json!({
+                "code": 1u32,
+                "err": format!("{}", err),
+            });
+            Json(response)
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct GetEdgePayload {
+    t: String,
+    vertex_id: Uuid,
+}
+
+#[post("/edge/get", format="json", data="<payload>")]
+pub fn get_edge(state: &State<AppState>, payload: Json<GetEdgePayload>) -> Json<Value> {
+    let data = payload.into_inner();
+    let edges = state.graph_store.get_all_edges(&data.t, data.vertex_id);
+    let texts: Vec<BTreeMap<String, _>> = edges.iter().map(|e| {
+        let mut item = BTreeMap::new();
+        item.insert(String::from("t"), Value::String(e.edge.key.t.to_owned().into_string()));
+        item.insert(String::from("inbound_id"), Value::String(e.edge.key.inbound_id.to_string()));
+        item.insert(String::from("outbound_id"), Value::String(e.edge.key.outbound_id.to_string()));
+        let mut props = Map::new();
+        e.props.iter().for_each(|p| {
+            let cloned = p.to_owned();
+            props.insert(cloned.name.to_string(), cloned.value);
+        });
+        item.insert(String::from("props"), Value::Object(props));
+        item
+    }).collect();
+    let mut data = BTreeMap::new();
+    data.insert("vertices".to_string(), texts);
+    let response = json!({
+        "code": 0u32,
+        "data": data,
+    });
+    Json(response)
+}
+
