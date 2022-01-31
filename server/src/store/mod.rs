@@ -1,3 +1,3 @@
-mod graph;
+mod db;
 
-pub use self::graph::GraphStore;
+pub use self::db::GraphStore;
