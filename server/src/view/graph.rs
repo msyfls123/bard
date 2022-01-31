@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use rocket::State;
+use rocket::{State, response::content::Html};
 use rocket_dyn_templates::Template;
 use rocket::form::{Form};
 use rocket::serde::json::Json;
@@ -9,7 +9,7 @@ use serde_json::Map;
 use serde::{Deserialize};
 use uuid::Uuid;
 
-use crate::store::GraphStore;
+use crate::store::{GraphStore, Schema};
 
 #[derive(FromForm)]
 pub struct VertexForm<'v> {
@@ -171,3 +171,27 @@ pub fn get_edge(graph_store: &State<GraphStore>, payload: Json<GetEdgePayload>) 
     Json(response)
 }
 
+/** GraphQL **/
+
+#[get("/graphql", format = "any", rank = 1)]
+pub fn graphiql() -> Html<String> {
+    juniper_rocket::graphiql_source("/graphql", None)
+}
+
+#[get("/graphql?<request>", format = "json")]
+pub fn get_graphql_handler(
+    context: &State<GraphStore>,
+    request: juniper_rocket::GraphQLRequest,
+    schema: &State<Schema>,
+) -> juniper_rocket::GraphQLResponse {
+    request.execute_sync(&*schema, &*context)
+}
+
+#[post("/graphql", data = "<request>")]
+pub fn post_graphql_handler(
+    context: &State<GraphStore>,
+    request: juniper_rocket::GraphQLRequest,
+    schema: &State<Schema>,
+) -> juniper_rocket::GraphQLResponse {
+    request.execute_sync(&*schema, &*context)
+}

@@ -4,13 +4,16 @@ use indradb::{
   Identifier, VertexProperties, RangeVertexQuery,
   Error as DbError, EdgeKey, EdgeProperties, SpecificVertexQuery, VertexQueryExt,
 };
+use juniper::Context;
 use serde_json::value::Value;
 use serde_json::Map;
 use uuid::{Uuid};
 
 pub struct GraphStore {
-    store: RocksdbDatastore
+    pub store: RocksdbDatastore
 }
+
+impl Context for GraphStore {}
 
 impl GraphStore {
     pub(crate) fn new(path: Option<&str>) -> Self {
@@ -19,6 +22,8 @@ impl GraphStore {
           None => "./store",
         };
         let store = RocksdbDatastore::new(db_path, None).unwrap();
+
+        store.index_property(Identifier::new("name").unwrap()).unwrap();
 
         Self {
           store

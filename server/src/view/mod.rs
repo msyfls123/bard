@@ -11,6 +11,9 @@ pub fn get_routes() -> Vec<Route> {
     graph::create_vertex,
     graph::create_edge,
     graph::get_edge,
+    graph::get_graphql_handler,
+    graph::post_graphql_handler,
+    graph::graphiql,
     file::upload,
   }
 }

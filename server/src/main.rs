@@ -1,5 +1,6 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate serde_json;
+#[macro_use] extern crate juniper;
 
 use std::collections::BTreeMap;
 use rocket::fs::{FileServer, Options};
@@ -20,6 +21,7 @@ fn index() -> Template {
 fn rocket() -> _ {
     rocket::build()
         .manage(store::GraphStore::new(None))
+        .manage(store::init_schema())
         .attach(helpers::template::get_template())
         .mount("/", [
             routes![index],
