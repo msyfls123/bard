@@ -9,7 +9,7 @@ use serde_json::Map;
 use serde::{Deserialize};
 use uuid::Uuid;
 
-use crate::state::AppState;
+use crate::store::GraphStore;
 
 #[derive(FromForm)]
 pub struct VertexForm<'v> {
@@ -19,9 +19,9 @@ pub struct VertexForm<'v> {
 
 #[deprecated]
 #[post("/vertex", format="form", data="<form>")]
-pub async fn post_vertex(state: &State<AppState>, form: Form<VertexForm<'_>>) -> Result<String, String> {
+pub async fn post_vertex(graph_store: &State<GraphStore>, form: Form<VertexForm<'_>>) -> Result<String, String> {
     let name = form.name;
-    match state.graph_store.insert(name, form.love) {
+    match graph_store.insert(name, form.love) {
         Ok(id) => {
             Ok(format!("{} is inserted as {}", name, id))
         },
@@ -33,8 +33,8 @@ pub async fn post_vertex(state: &State<AppState>, form: Form<VertexForm<'_>>) ->
 
 #[deprecated]
 #[get("/vertex", format="any", rank=1)]
-pub fn vertex_list(state: &State<AppState>) -> Template {
-    let vertices = state.graph_store.get_all_vertices();
+pub fn vertex_list(graph_store: &State<GraphStore>) -> Template {
+    let vertices = graph_store.get_all_vertices();
     let texts: Vec<BTreeMap<String, _>> = vertices.iter().map(|v| {
         let mut item = BTreeMap::new();
         item.insert(String::from("id"), Value::String(v.vertex.id.to_hyphenated().to_string()));
@@ -57,9 +57,9 @@ pub struct CreateVertexPayload {
 }
 
 #[post("/vertex", format="json", data="<obj>")]
-pub fn create_vertex(state: &State<AppState>, obj: Json<CreateVertexPayload>) -> Json<Value> {
+pub fn create_vertex(graph_store: &State<GraphStore>, obj: Json<CreateVertexPayload>) -> Json<Value> {
     let data = obj.into_inner();
-    let res = state.graph_store.create_vertex(data.t, data.properties);
+    let res = graph_store.create_vertex(data.t, data.properties);
     match res {
         Ok(uuid) => {
             let response = json!({
@@ -80,8 +80,8 @@ pub fn create_vertex(state: &State<AppState>, obj: Json<CreateVertexPayload>) ->
 }
 
 #[get("/vertex", format="json")]
-pub fn get_vertex(state: &State<AppState>) -> Json<Value> {
-    let vertices = state.graph_store.get_all_vertices();
+pub fn get_vertex(graph_store: &State<GraphStore>) -> Json<Value> {
+    let vertices = graph_store.get_all_vertices();
     let texts: Vec<BTreeMap<String, _>> = vertices.iter().map(|v| {
         let mut item = BTreeMap::new();
         item.insert(String::from("id"), Value::String(v.vertex.id.to_hyphenated().to_string()));
@@ -112,9 +112,9 @@ pub struct CreateEdgePayload {
 }
 
 #[post("/edge/create", format="json", data="<payload>")]
-pub fn create_edge(state: &State<AppState>, payload: Json<CreateEdgePayload>) -> Json<Value> {
+pub fn create_edge(graph_store: &State<GraphStore>, payload: Json<CreateEdgePayload>) -> Json<Value> {
     let data = payload.into_inner();
-    let result = state.graph_store.create_edge(&data.t, data.outbound_id, data.inbound_id, data.properties);
+    let result = graph_store.create_edge(&data.t, data.outbound_id, data.inbound_id, data.properties);
     match result {
         Ok(true) => {
             let response = json!({
@@ -146,9 +146,9 @@ pub struct GetEdgePayload {
 }
 
 #[post("/edge/get", format="json", data="<payload>")]
-pub fn get_edge(state: &State<AppState>, payload: Json<GetEdgePayload>) -> Json<Value> {
+pub fn get_edge(graph_store: &State<GraphStore>, payload: Json<GetEdgePayload>) -> Json<Value> {
     let data = payload.into_inner();
-    let edges = state.graph_store.get_all_edges(&data.t, data.vertex_id);
+    let edges = graph_store.get_all_edges(&data.t, data.vertex_id);
     let texts: Vec<BTreeMap<String, _>> = edges.iter().map(|e| {
         let mut item = BTreeMap::new();
         item.insert(String::from("t"), Value::String(e.edge.key.t.to_owned().into_string()));
