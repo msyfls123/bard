@@ -1,11 +1,10 @@
-use wasm_bindgen::JsValue;
 use js_sys::JSON::stringify_with_replacer_and_space;
 use yew::{Context, Component, Html, prelude::html};
+use wasm_bindgen::{JsValue};
 
 use crate::helpers::request::graph;
 
 pub enum Msg {
-    Fetch,
     Vertex(JsValue)
 }
 
@@ -21,19 +20,12 @@ impl Component for Graph {
         Self { vertex_data: None }
     }
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let link = ctx.link().to_owned();
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::Vertex(vertex_data) => {
                 self.vertex_data = Some(vertex_data);
                 true
             },
-            Msg::Fetch => {
-                graph::get_vertex_data(move |data| {
-                    link.send_message(Msg::Vertex(data))
-                });
-                false
-            }
             _ => {
                 false
             }
@@ -42,8 +34,12 @@ impl Component for Graph {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
-        let onclick_fetch_btn = link.callback(|_| {
-            Msg::Fetch
+       
+        let onclick_fetch_btn = link.callback_future_once(|_| {
+            async {
+                let result = graph::get_vertex_data().await.unwrap();
+                Msg::Vertex(result)
+            }
         });
         html!{
             <div>
