@@ -1,9 +1,5 @@
 import wasm from './Cargo.toml';
 
-wasm().then(({ run_app }) => {
-  run_app();
-});
-
 const cos = new COS({
   getAuthorization: async (options, callback) => {
     const url = 'https://void.ebichu.cc/sts';
@@ -25,34 +21,36 @@ const cos = new COS({
   }
 });
 
-function handleFile(e) {
+function handleFileChange(e) {
   const file = e.target.files[0];
   if (!file) {
-    console.warn('no file');
-    return;
+    return Promise.reject('no file');
   }
   const name = file.name;
-  cos.putObject(
-    {
-      Bucket: 'kimi-1251502833',
-      Region: 'ap-beijing',
-      Key: `cos-test/${name}`,
-      Body: file,
-      onProgress: function(progressData) {
-        console.log('percentage', JSON.stringify(progressData));
-      }
-    },
-    function(err, data) {
-      if (err) {
-        console.error('upload fail', err);
-      } else {
-        console.info('upload success', data);
-      }
-    },
-  );
+  return new Promise((resolve, reject) => {
+    cos.putObject(
+      {
+        Bucket: 'kimi-1251502833',
+        Region: 'ap-beijing',
+        Key: `cos-test/${name}`,
+        Body: file,
+        onProgress: function(progressData) {
+          console.log('percentage', JSON.stringify(progressData));
+        }
+      },
+      function(err, data) {
+        if (err) {
+          reject(err);
+          console.error('upload fail', err);
+        } else {
+          resolve(data);
+          console.info('upload success', data);
+        }
+      },
+    );
+  })
 }
 
-const input = document.createElement('input');
-input.type = 'file';
-input.onchange = handleFile;
-document.body.appendChild(input);
+wasm().then(({ run_app }) => {
+  run_app(handleFileChange);
+});
