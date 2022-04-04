@@ -2,6 +2,7 @@ use rocket::{Route};
 
 mod graph;
 mod file;
+mod auth;
 
 pub fn get_routes() -> Vec<Route> {
   routes!{
@@ -15,5 +16,9 @@ pub fn get_routes() -> Vec<Route> {
     graph::post_graphql_handler,
     graph::graphiql,
     file::upload,
+    auth::signup,
+    auth::login,
+    auth::logout,
+    auth::me,
   }
 }

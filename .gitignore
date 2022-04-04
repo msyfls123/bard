@@ -28,5 +28,8 @@ node_modules/
 # indradb store
 /store/
 
+# auth db
+auth.db
+
 # macOS file
 .DS_Store

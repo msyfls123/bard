@@ -5,6 +5,7 @@
 use std::collections::BTreeMap;
 use rocket::fs::{FileServer, Options};
 use rocket_dyn_templates::Template;
+use rocket_auth::Users;
 
 mod store;
 mod view;
@@ -20,6 +21,7 @@ fn index() -> Template {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
+        .manage(Users::open_rusqlite("auth.db").unwrap())
         .manage(store::GraphStore::new(None))
         .manage(store::init_schema())
         .attach(helpers::template::get_template())
