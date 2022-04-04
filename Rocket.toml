@@ -1,3 +1,4 @@
 [default]
 address = "0.0.0.0"
 template_dir = "server/templates"
+secret_key = "SPb6TPCH1XCqVQevgIp0YZ7/vs1VlBvfCztePvRm/X8="
