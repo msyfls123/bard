@@ -1,6 +1,6 @@
 #[macro_use] extern crate serde_json;
 
-use app::AppProps;
+use constants::app::AppProps;
 use wasm_bindgen::prelude::*;
 use web_sys::{console, window};
 use js_sys::{Reflect, Function};
@@ -8,6 +8,8 @@ use js_sys::{Reflect, Function};
 mod app;
 mod component;
 mod helpers;
+mod constants;
+mod container;
 
 #[wasm_bindgen()]
 pub fn log(name: &str) {
@@ -27,7 +29,7 @@ pub fn run_app(upload_file: Function) -> Result<(), JsValue> {
     let window = window().expect("window not existed");
     let document = window.document().expect("document not existed");
     let element = document.get_element_by_id("app").unwrap_throw();
-    yew::start_app_with_props_in_element::<app::App>(element, AppProps { upload_file });
+    yew::start_app_with_props_in_element::<app::Main>(element, AppProps { upload_file });
 
     Ok(())
 }

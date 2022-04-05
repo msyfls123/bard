@@ -20,5 +20,6 @@ pub fn get_routes() -> Vec<Route> {
     auth::login,
     auth::logout,
     auth::me,
+    auth::login_page,
   }
 }
