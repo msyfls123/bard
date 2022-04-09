@@ -1,19 +1,11 @@
 use yew::{prelude::*};
 use yew_router::prelude::*;
-use crate::constants::app::{AppContext, AppProps};
+use crate::constants::app::{AppContext, AppProps, Route};
 
-use crate::container::home::Home;
+use crate::container::{ Home };
+use crate::component::{ Header };
 
-#[derive(Clone, Routable, PartialEq)]
-enum Route {
-    #[at("/")]
-    Home,
-    #[at("/login")]
-    Login,
-    #[not_found]
-    #[at("/404")]
-    NotFound,
-}
+
 
 fn switch(routes: &Route) -> Html {
     match routes {
@@ -30,6 +22,7 @@ pub fn App(props: &AppProps) -> Html {
             upload_file: props.upload_file.clone(),
         }}>
             <BrowserRouter>
+                <Header/>
                 <Switch<Route> render={Switch::render(switch)} />
             </BrowserRouter>
         </ContextProvider<AppContext>>

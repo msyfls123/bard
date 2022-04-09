@@ -25,6 +25,8 @@
     "@rollup/plugin-replace": "^3.0.1",
     "@wasm-tool/rollup-plugin-rust": "^1.0.7",
     "rollup": "^2.66.1",
-    "rollup-plugin-livereload": "^2.0.5"
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-styles": "^4.0.0",
+    "stylus": "^0.57.0"
   }
 }

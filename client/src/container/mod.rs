@@ -1,1 +1,3 @@
-pub mod home;
+mod home;
+
+pub use self::home::*;

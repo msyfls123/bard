@@ -1,4 +1,5 @@
 import livereload from 'rollup-plugin-livereload';
+import styles from 'rollup-plugin-styles';
 
 import rust from '@wasm-tool/rollup-plugin-rust';
 
@@ -9,6 +10,7 @@ const plugins = [
       verbose: true,
       serverPath: '/public/',
     }),
+    styles(),
 ];
 
 if (hot) {
@@ -19,10 +21,11 @@ if (hot) {
 }
 
 export default {
-    input: 'index.js',
+    input: 'src/index.js',
     output: {
         dir: '../static',
         format: 'iife',
+        assetFileNames: '[name]-[hash][extname]',
         sourcemap: hot,
     },
     treeshake: !hot,

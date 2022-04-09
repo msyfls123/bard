@@ -1,4 +1,6 @@
-import wasm from './Cargo.toml';
+import './css/index.styl'
+
+import wasm from '../Cargo.toml';
 
 const cos = new COS({
   getAuthorization: async (options, callback) => {
