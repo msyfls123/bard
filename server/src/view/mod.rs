@@ -3,6 +3,7 @@ use rocket::{Route};
 mod graph;
 mod file;
 mod auth;
+mod utils;
 
 pub fn get_routes() -> Vec<Route> {
   routes!{
@@ -19,6 +20,7 @@ pub fn get_routes() -> Vec<Route> {
     auth::signup,
     auth::login,
     auth::logout,
+    auth::me_api,
     auth::me,
     auth::login_page,
   }
