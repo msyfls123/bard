@@ -20,7 +20,7 @@ wasm-bindgen-futures = "0.4.29"
 yew-router = "0.16.0"
 
 [dependencies.web-sys]
-version = "0.3.55"
+version = "0.3.57"
 features = [
   'Headers',
   'Request',
@@ -28,9 +28,17 @@ features = [
   'RequestMode',
   'Response',
   'Window',
+  'FocusEvent',
+  'EventTarget',
+  'HtmlElement',
+  'HtmlFormElement',
+  'HtmlInputElement',
+  'HtmlCollection',
+  'Element',
 ]
+
 [dependencies.wasm-bindgen]
-version = "0.2.79"
+version = "0.2.80"
 features = [
     'serde-serialize',
 ]
