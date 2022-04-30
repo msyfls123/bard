@@ -18,6 +18,11 @@ pub fn header() -> Html {
             }>
                 {"Login"}
             </Link<Route>>
+            <Link<Route> to={Route::Me} classes={
+                classes!((location.route() == Some(Route::Me)).then(|| "active"))
+            }>
+                {"Me"}
+            </Link<Route>>
         </nav>
     }
 }

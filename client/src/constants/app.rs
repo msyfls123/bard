@@ -18,6 +18,8 @@ pub enum Route {
     Home,
     #[at("/login")]
     Login,
+    #[at("/me")]
+    Me,
     #[not_found]
     #[at("/404")]
     NotFound,

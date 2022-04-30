@@ -14,9 +14,13 @@ pub async fn signup(form: Form<Signup>, auth: Auth<'_>) -> Result<&'static str, 
 }
 
 #[post("/login", data="<form>")]
-pub async fn login(form: rocket::serde::json::Json<Login>, auth: Auth<'_>) -> Result<&'static str, Error> {
+pub async fn login(form: rocket::serde::json::Json<Login>, auth: Auth<'_>) -> Result<Json<Value>, Error> {
     auth.login(&form).await?;
-    Ok("You're logged in.")
+    let res = json!({
+        "status": "success",
+        "message": "You're logged in.",
+    });
+    Ok(Json(res))
 }
 
 #[post("/logout")]
