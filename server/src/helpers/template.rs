@@ -14,8 +14,16 @@ fn debug_helper (h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContex
   Ok(())
 }
 
+fn json_helper (h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+  let param = h.param(0).unwrap();
+
+  out.write(param.value().to_string().as_ref())?;
+  Ok(())
+}
+
 pub fn get_template() -> impl Fairing {
   Template::custom(|engines| {
     engines.handlebars.register_helper("debug", Box::new(debug_helper));
+    engines.handlebars.register_helper("json", Box::new(json_helper));
   })
 }

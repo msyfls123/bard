@@ -8,6 +8,11 @@
 </head>
 <body>
   <h1>hello {{ name }}</h1>
+  <script>
+    window.app = {
+      user: {{ json user }},
+    }
+  </script>
   <div id="app"></div>
   <script src="https://cdn.jsdelivr.net/npm/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script>
   <script src="/public/index.js"></script>

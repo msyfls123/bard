@@ -1,10 +1,10 @@
-use rocket::{get, post, form::Form, response::Redirect};
+use rocket::{get, post, form::Form, response::Redirect, Request};
 use rocket_auth::{Error, Auth, Signup, Login, User};
 use rocket_dyn_templates::Template;
 use rocket::serde::json::Json;
 use serde_json::value::Value;
 
-use super::utils::render_spa;
+use super::utils::{render_spa, SPAInfo};
 
 #[post("/signup", data="<form>")]
 pub async fn signup(form: Form<Signup>, auth: Auth<'_>) -> Result<&'static str, Error> {
@@ -51,19 +51,19 @@ pub enum MeResult {
 }
 
 #[get("/me", rank=1)]
-pub fn me(option: Option<User>) -> MeResult {
+pub fn me(spa_info: SPAInfo, option: Option<User>) -> MeResult {
     if let Some(_) = option {
-        MeResult::Template(render_spa())
+        MeResult::Template(render_spa(&spa_info))
     } else {
         MeResult::Redirect(Redirect::temporary(uri!(login_page)))
     }
 }
 
 #[get("/login")]
-pub fn login_page(option: Option<User>) -> MeResult {
+pub fn login_page(spa_info: SPAInfo, option: Option<User>) -> MeResult {
     if let Some(_) = option {
         MeResult::Redirect(Redirect::temporary(uri!(me)))
     } else {
-        MeResult::Template(render_spa())
+        MeResult::Template(render_spa(&spa_info))
     }
 }
