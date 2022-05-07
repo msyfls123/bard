@@ -3,7 +3,8 @@
 use constants::app::AppProps;
 use wasm_bindgen::prelude::*;
 use web_sys::{console, window};
-use js_sys::{Reflect, Function};
+use js_sys::{Reflect, Function, Object};
+use constants::auth::User;
 
 mod app;
 mod component;
@@ -25,11 +26,23 @@ pub fn keys(data: &JsValue) {
 }
 
 #[wasm_bindgen]
-pub fn run_app(upload_file: Function) -> Result<(), JsValue> {
+pub fn run_app(props: Object) -> Result<(), JsValue> {
     let window = window().expect("window not existed");
     let document = window.document().expect("document not existed");
     let element = document.get_element_by_id("app").unwrap_throw();
-    yew::start_app_with_props_in_element::<app::Main>(element, AppProps { upload_file });
+    let upload_file: Function = Reflect::get(&props, &JsValue::from_str("upload_file")).unwrap().into();
+    let user_obj: JsValue = Reflect::get(&props, &JsValue::from_str("user")).unwrap();
+    let user: Option<User> = match user_obj.into_serde::<User>() {
+        Ok(u) => {
+            console::log_1(&JsValue::from_serde(&u).unwrap());
+            Some(u)
+        },
+        Err(e) => {
+            console::log_1(&JsValue::from_str(&e.to_string()));
+            None
+        },
+    };
+    yew::start_app_with_props_in_element::<app::Main>(element, AppProps { upload_file, user });
 
     Ok(())
 }

@@ -54,5 +54,8 @@ function handleFileChange(e) {
 }
 
 wasm().then(({ run_app }) => {
-  run_app(handleFileChange);
+  run_app({
+    handleFileChange,
+    user: window.app.user,
+  });
 });
