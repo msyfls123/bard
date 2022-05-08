@@ -6,7 +6,8 @@ use crate::constants::auth::User;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct AppContext {
-    pub upload_file: Function
+    pub upload_file: Function,
+    pub user: Option<User>,
 }
 
 #[derive(Properties, PartialEq)]

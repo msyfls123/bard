@@ -32,16 +32,7 @@ pub fn run_app(props: Object) -> Result<(), JsValue> {
     let element = document.get_element_by_id("app").unwrap_throw();
     let upload_file: Function = Reflect::get(&props, &JsValue::from_str("upload_file")).unwrap().into();
     let user_obj: JsValue = Reflect::get(&props, &JsValue::from_str("user")).unwrap();
-    let user: Option<User> = match user_obj.into_serde::<User>() {
-        Ok(u) => {
-            console::log_1(&JsValue::from_serde(&u).unwrap());
-            Some(u)
-        },
-        Err(e) => {
-            console::log_1(&JsValue::from_str(&e.to_string()));
-            None
-        },
-    };
+    let user: Option<User> = helpers::user::parse_user(user_obj);
     yew::start_app_with_props_in_element::<app::Main>(element, AppProps { upload_file, user });
 
     Ok(())

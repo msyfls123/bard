@@ -32,10 +32,9 @@ pub fn logout(auth: Auth<'_>) {
 pub fn me_api(option: Option<User>) -> Json<Value> {
     if let Some(user) = option {
         let res = json!({
-            "user": {
-                "id": user.id(),
-                "email": user.email(),
-            }
+            "id": user.id(),
+            "email": user.email(),
+            "is_admin": user.is_admin,
         });
         Json(res)
     } else {

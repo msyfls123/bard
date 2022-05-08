@@ -6,7 +6,7 @@ pub struct LoginInfo {
     pub password: String
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct User {
     pub id: i32,
     pub email: String,
