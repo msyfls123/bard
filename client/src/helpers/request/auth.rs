@@ -4,7 +4,7 @@ use wasm_bindgen_futures::{JsFuture};
 use web_sys::{window, Request, RequestInit, Response};
 use js_sys::JSON;
 
-pub async fn post_login(info: &LoginInfo) -> Result<JsValue, JsValue> {
+pub async fn post_login(info: &LoginInfo, is_sign_up: bool) -> Result<JsValue, JsValue> {
     let win = window().unwrap();
     let mut options = RequestInit::new();
     let headers = json!({
@@ -16,7 +16,8 @@ pub async fn post_login(info: &LoginInfo) -> Result<JsValue, JsValue> {
     let json_str = JSON::stringify(&json_obj).unwrap();
     options.body(Some(&json_str));
     options.method("post");
-    let req = Request::new_with_str_and_init("/login", &options).unwrap();
+    let url = if is_sign_up { "/signup" } else { "/login" };
+    let req = Request::new_with_str_and_init(url, &options).unwrap();
     let fetch_res = win.fetch_with_request(&req);
     let raw_res = JsFuture::from(fetch_res).await.unwrap();
     let res: Response = raw_res.dyn_into().unwrap();

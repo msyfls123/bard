@@ -7,14 +7,18 @@ use serde_json::value::Value;
 use super::utils::{render_spa, SPAInfo};
 
 #[post("/signup", data="<form>")]
-pub async fn signup(form: Form<Signup>, auth: Auth<'_>) -> Result<&'static str, Error> {
+pub async fn signup(form: Json<Signup>, auth: Auth<'_>) -> Result<Json<Value>, Error> {
     auth.signup(&form).await?;
     auth.login(&form.into()).await?;
-    Ok("You signed up.")
+    let res = json!({
+        "status": "success",
+        "message": "You signed up.",
+    });
+    Ok(Json(res))
 }
 
 #[post("/login", data="<form>")]
-pub async fn login(form: rocket::serde::json::Json<Login>, auth: Auth<'_>) -> Result<Json<Value>, Error> {
+pub async fn login(form: Json<Login>, auth: Auth<'_>) -> Result<Json<Value>, Error> {
     auth.login(&form).await?;
     let res = json!({
         "status": "success",
