@@ -8,7 +8,9 @@ const cos = new COS({
     let data;
     try {
       data = await fetch(url).then(res => res.json());
-    } catch {}
+    } catch (err) {
+      console.err('connect secret server error', err)
+    }
     const { credentials, startTime, expiredTime } = data || {};
     if (!(data && credentials)) {
       return console.error('data invalid:\n' + JSON.stringify(data, null, 2))
