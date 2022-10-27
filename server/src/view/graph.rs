@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use rocket::{State, response::content::Html, serde::uuid::Uuid};
+use rocket::{State, response::content::RawHtml, serde::uuid::Uuid};
 use rocket_dyn_templates::Template;
 use rocket::form::{Form};
 use rocket::serde::json::Json;
@@ -36,7 +36,7 @@ pub fn vertex_list(graph_store: &State<GraphStore>) -> Template {
     let vertices = graph_store.get_all_vertices();
     let texts: Vec<BTreeMap<String, _>> = vertices.iter().map(|v| {
         let mut item = BTreeMap::new();
-        item.insert(String::from("id"), Value::String(v.vertex.id.to_hyphenated().to_string()));
+        item.insert(String::from("id"), Value::String(v.vertex.id.hyphenated().to_string()));
         item.insert(String::from("type"), Value::String(v.vertex.t.as_str().to_owned()));
         v.props.iter().for_each(|p| {
             let cloned = p.to_owned();
@@ -63,7 +63,7 @@ pub fn create_vertex(graph_store: &State<GraphStore>, obj: Json<CreateVertexPayl
         Ok(uuid) => {
             let response = json!({
                 "code": 0u32,
-                "res": uuid.to_hyphenated().to_string(),
+                "res": uuid.hyphenated().to_string(),
             });
             Json(response)
         },
@@ -83,7 +83,7 @@ pub fn get_vertex(graph_store: &State<GraphStore>) -> Json<Value> {
     let vertices = graph_store.get_all_vertices();
     let texts: Vec<BTreeMap<String, _>> = vertices.iter().map(|v| {
         let mut item = BTreeMap::new();
-        item.insert(String::from("id"), Value::String(v.vertex.id.to_hyphenated().to_string()));
+        item.insert(String::from("id"), Value::String(v.vertex.id.hyphenated().to_string()));
         item.insert(String::from("type"), Value::String(v.vertex.t.as_str().to_owned()));
         let mut props = Map::new();
         v.props.iter().for_each(|p| {
@@ -173,7 +173,7 @@ pub fn get_edge(graph_store: &State<GraphStore>, payload: Json<GetEdgePayload>) 
 /** GraphQL **/
 
 #[get("/graphql", format = "any", rank = 1)]
-pub fn graphiql() -> Html<String> {
+pub fn graphiql() -> RawHtml<String> {
     juniper_rocket::graphiql_source("/graphql", None)
 }
 

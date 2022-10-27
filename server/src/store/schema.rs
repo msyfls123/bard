@@ -24,7 +24,7 @@ impl Query {
             Ok(list) => {
                 if list.len() == 0 { return None }
                 let man = Man {
-                    id: list[0].vertex.id.to_hyphenated().to_string(),
+                    id: list[0].vertex.id.hyphenated().to_string(),
                     name: list[0].props.iter().find_map(|i| {
                         if i.name.as_str() == "name" {
                             Some(i.value.to_string())

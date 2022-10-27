@@ -34,7 +34,7 @@ impl GraphStore {
     pub fn insert(&self, name: &str, love: &str) -> DbResult<String> {
       let vertex = Vertex::new(Identifier::new(name).unwrap());
       let vertex_id = vertex.id;
-      let id_string = vertex.id.to_hyphenated().to_string();
+      let id_string = vertex.id.hyphenated().to_string();
 
       match self.store.bulk_insert(vec!{BulkInsertItem::Vertex(vertex)}) {
         Ok(_) => {

@@ -11,19 +11,19 @@ name = "server"
 path = "src/main.rs"
 
 [dependencies]
-indradb-lib = { version = "3", features = ["rocksdb-datastore"] }
+indradb-lib = { version = "3.0.3", features = ["rocksdb-datastore"] }
 serde_json = "1.0.75"
-handlebars = "3.5.5"
+handlebars = "4.2.2"
 serde = "1.0.135"
-juniper_rocket = "0.8.0"
+juniper_rocket = "0.8.2"
 juniper = "0.15.8"
 
 [dependencies.rocket]
-version = "0.5.0-rc.1"
+version = "0.5.0-rc.2"
 features = ["json", "uuid"]
 
 [dependencies.rocket_dyn_templates]
-version = "0.1.0-rc.1"
+version = "0.1.0-rc.2"
 features = ["handlebars"]
 
 [dependencies.rocket_auth]
