@@ -1,13 +1,12 @@
 use std::collections::BTreeMap;
 
-use rocket::{State, response::content::Html};
+use rocket::{State, response::content::Html, serde::uuid::Uuid};
 use rocket_dyn_templates::Template;
 use rocket::form::{Form};
 use rocket::serde::json::Json;
 use serde_json::value::Value;
 use serde_json::Map;
 use serde::{Deserialize};
-use uuid::Uuid;
 
 use crate::store::{GraphStore, Schema};
 

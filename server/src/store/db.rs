@@ -7,7 +7,7 @@ use indradb::{
 use juniper::Context;
 use serde_json::value::Value;
 use serde_json::Map;
-use uuid::{Uuid};
+use rocket::serde::uuid::{Uuid};
 
 pub struct GraphStore {
     pub store: RocksdbDatastore
