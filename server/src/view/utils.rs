@@ -16,10 +16,10 @@ impl<'a> FromRequest<'a> for SPAInfo {
             Outcome::Success(user) => Outcome::Success(SPAInfo {
                 user: Some(user),
             }),
-            Outcome::Failure(_) => Outcome::Success(SPAInfo {
+            Outcome::Error(_) => Outcome::Success(SPAInfo {
                 user: None,
             }),
-            Outcome::Forward(_) => Outcome::Failure((Status::from_code(401).unwrap(), ())),
+            Outcome::Forward(_) => Outcome::Error((Status::from_code(401).unwrap(), ())),
         }
         
     }
