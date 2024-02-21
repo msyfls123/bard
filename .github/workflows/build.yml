@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
@@ -42,7 +42,9 @@ jobs:
           args: --bin server --release
 
       - name: Run
-        run: ./script/run_on_ci.sh
+        run:
+          chmod +x ./target/release/server
+          ./script/run_on_ci.sh
 
       - name: Archive debug artifacts
         uses: actions/upload-artifact@v2
@@ -53,4 +55,7 @@ jobs:
             server/templates
             static/
             Rocket.toml
+            DEPLOY.md
+            Dockerfile
+            docker-compose.yml
             !static/.gitignore
