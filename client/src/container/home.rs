@@ -71,14 +71,16 @@ impl Component for HomeInner {
         let link = context.link();
         html! {
             <div>
-              <p>{ "count " } { self.value } </p>
-              <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
-              <p>{ "Hello world!" }</p>
-              <form method="post" enctype="multipart/form-data" action="/upload">
-                <input type="file" name="file"/>
-                <button type="submit">{"Submit"}</button>
-              </form>
-              <Graph/>
+              <div class="hidden">
+                <p>{ "count " } { self.value } </p>
+                <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
+                <p>{ "Hello world!" }</p>
+                <form class="hidden" method="post" enctype="multipart/form-data" action="/upload">
+                    <input type="file" name="file"/>
+                    <button type="submit">{"Submit"}</button>
+                </form>
+                <Graph/>
+              </div>
               <h2>{"Upload"}</h2>
               <input type="file" onchange={link.callback(|e| Msg::FileChange(e))}/>
               <p>
