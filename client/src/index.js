@@ -55,6 +55,28 @@ function handleFileChange(e) {
   })
 }
 
+function listFolder() {
+  return new Promise((resolve, reject) => {
+    cos.getBucket({
+      Bucket: 'kimi-1251502833', /* 填入您自己的存储桶，必须字段 */
+      Region: 'ap-beijing',  /* 存储桶所在地域，例如ap-beijing，必须字段 */
+      Prefix: 'cos-test/',              /* Prefix表示列出的object的key以prefix开始，非必须 */
+      Delimiter: '/',            /* Deliter表示分隔符, 设置为/表示列出当前目录下的object, 设置为空表示列出所有的object，非必须 */
+    }, function(err, data) {
+      if (err) {
+        reject(err);
+        console.error('list folder fail', err);
+      } else {
+        resolve(data);
+        console.info('list folder success', data);
+      }
+    });
+  
+  })
+}
+
+window.listFolder = listFolder
+
 wasm().then(({ run_app }) => {
   run_app({
     handleFileChange,
