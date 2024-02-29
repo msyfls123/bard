@@ -3,7 +3,7 @@ use yew::{prelude::{function_component, html}, use_context};
 use js_sys::{JSON::stringify_with_replacer_and_space};
 use yew_router::prelude::{Redirect};
 use wasm_bindgen::{JsValue};
-use yew::{use_state, use_effect_with_deps};
+use yew::{use_state, use_effect};
 
 use crate::{constants::app::Route, helpers::{request::auth::fetch_user, user::parse_user}};
 
@@ -17,8 +17,8 @@ pub fn me() -> Html {
     {
         let user_state = user_state.clone();
         let fetched_clone = fetched.clone();
-        use_effect_with_deps(
-            move |_| {
+        use_effect(
+            move || {
                 spawn_local(async move {
                     let user = fetch_user().await.unwrap();
                     let user = parse_user(user);
@@ -27,7 +27,6 @@ pub fn me() -> Html {
                 });
                 || {}
             },
-            *fetched,
         )
     }
     match &*fetched {

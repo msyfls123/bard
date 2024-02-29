@@ -31,9 +31,14 @@ pub fn run_app(props: Object) -> Result<(), JsValue> {
     let document = window.document().expect("document not existed");
     let element = document.get_element_by_id("app").unwrap_throw();
     let upload_file: Function = Reflect::get(&props, &JsValue::from_str("handleFileChange")).unwrap().into();
+    let list_bucket: Function = Reflect::get(&props, &JsValue::from_str("listBucket")).unwrap().into();
     let user_obj: JsValue = Reflect::get(&props, &JsValue::from_str("user")).unwrap();
     let user: Option<User> = helpers::user::parse_user(user_obj);
-    yew::start_app_with_props_in_element::<app::Main>(element, AppProps { upload_file, user });
+    yew::start_app_with_props_in_element::<app::Main>(element, AppProps {
+        upload_file,
+        list_bucket,
+        user,
+    });
 
     Ok(())
 }

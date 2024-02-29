@@ -22,6 +22,7 @@ pub fn App(props: &AppProps) -> Html {
         <ContextProvider<AppContext> context={AppContext {
             user: props.user.clone(),
             upload_file: props.upload_file.clone(),
+            list_bucket: props.list_bucket.clone(),
         }}>
             <BrowserRouter>
                 <Header/>

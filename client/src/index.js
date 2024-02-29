@@ -55,7 +55,7 @@ function handleFileChange(e) {
   })
 }
 
-function listFolder() {
+function listBucket() {
   return new Promise((resolve, reject) => {
     cos.getBucket({
       Bucket: 'kimi-1251502833', /* 填入您自己的存储桶，必须字段 */
@@ -75,11 +75,12 @@ function listFolder() {
   })
 }
 
-window.listFolder = listFolder
+window.listBucket = listBucket
 
 wasm().then(({ run_app }) => {
   run_app({
     handleFileChange,
+    listBucket,
     user: window.app.user,
   });
 });
