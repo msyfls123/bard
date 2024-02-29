@@ -2,14 +2,14 @@ use js_sys::Promise;
 use serde_json::{Value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
-use yew::{prelude::{function_component, html}, use_context, use_effect, use_state, use_effect_with_deps};
+use yew::{prelude::{function_component, html}, Html, Properties, use_context, use_effect, use_state, use_effect_with_deps};
 use web_sys::{console};
 use serde_wasm_bindgen::from_value;
 use serde::{Deserialize};
 
 use crate::constants::app::AppContext;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq, Clone)]
 pub struct File {
     Key: Value,
     Size: Value,
@@ -53,11 +53,49 @@ pub fn bucket() -> Html {
         )
     }
 
+    let list = list.as_ref();
     html! {
         <div>
             <h2>{"Bucket"}</h2>
             <ul>
+            {
+                if list.is_some() {
+                    html! {
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>{"File"}</th>
+                                    <th>{"Size (bytes)"}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {for list.unwrap().iter().map(|file| file_item(file))}
+                            </tbody>
+                        </table>
+                        
+                    }
+                } else {
+                    html! { "loading" }
+                }
+            }
+                
             </ul>
         </div>
     }
+}
+
+fn file_item(file: &File) -> Html {
+    let file_size = file.Size.as_str().unwrap();
+    let href = format!("https://cdn.ebichu.cc/{}", file.Key.as_str().unwrap());
+    let file_key2 = file.Key.clone();
+    html! { <tr>
+        <td>
+            <a href={href.to_owned()} target="_blank">
+                {file_key2.as_str().unwrap()}
+            </a>
+        </td>
+        <td>
+            {file_size}
+        </td>
+    </tr> }
 }
