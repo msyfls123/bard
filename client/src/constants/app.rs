@@ -7,12 +7,14 @@ use crate::constants::auth::User;
 #[derive(Clone, Debug, PartialEq)]
 pub struct AppContext {
     pub upload_file: Function,
+    pub list_bucket: Function,
     pub user: Option<User>,
 }
 
 #[derive(Properties, PartialEq)]
 pub struct AppProps {
     pub upload_file: Function,
+    pub list_bucket: Function,
     pub user: Option<User>,
 }
 

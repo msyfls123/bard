@@ -6,6 +6,7 @@ use yew::{prelude::*, virtual_dom::VNode,function_component};
 use yew_router::prelude::*;
 
 use crate::component::graph::Graph;
+use crate::component::bucket::Bucket;
 use crate::constants::app::AppContext;
 
 pub struct HomeInner {
@@ -81,6 +82,7 @@ impl Component for HomeInner {
                 </form>
                 <Graph/>
               </div>
+              <Bucket/>
               <h2>{"Upload"}</h2>
               <input type="file" onchange={link.callback(|e| Msg::FileChange(e))}/>
               <p>
