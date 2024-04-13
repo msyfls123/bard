@@ -3,7 +3,6 @@ use wasm_bindgen::{JsValue, prelude::Closure};
 use wasm_bindgen_futures::{JsFuture, spawn_local};
 use web_sys::console;
 use yew::{prelude::*, virtual_dom::VNode,function_component};
-use yew_router::prelude::*;
 
 use crate::component::graph::Graph;
 use crate::component::bucket::Bucket;
@@ -44,7 +43,7 @@ impl Component for HomeInner {
                 true
             },
             Msg::FileChange(e) => {
-                let callback = ctx.link().callback_once(|value: JsValue| {
+                let callback = ctx.link().callback(|value: JsValue| {
                     Msg::Upload(value)
                 });
                 let func = &ctx.props().upload_file;
@@ -89,7 +88,7 @@ impl Component for HomeInner {
                 { if self.upload_result.is_some() {
                     let upload_json = self.upload_result.to_owned().unwrap();
                     let upload_text = stringify_with_replacer_and_space(&upload_json, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap();
-                    html! { <pre>{upload_text}</pre>}
+                    html! { <pre>{upload_text.as_string().unwrap_or_default()}</pre>}
                 } else {
                     html!{}
                 }}

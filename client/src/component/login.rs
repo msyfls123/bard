@@ -1,7 +1,7 @@
 use yew::prelude::{function_component, html, use_state};
-use web_sys::{FocusEvent, HtmlFormElement, Element, HtmlInputElement, console, window, Event};
+use web_sys::{HtmlFormElement, Element, HtmlInputElement, console, window, Event};
 use wasm_bindgen::{JsValue};
-use yew::{Callback};
+use yew::{Callback, Html, SubmitEvent};
 use wasm_bindgen_futures::spawn_local;
 use yew_router::prelude::*;
 use serde_json::{Value};
@@ -19,7 +19,7 @@ fn get_value(form: &HtmlFormElement, name: &str) -> String {
 
 #[function_component(Login)]
 pub fn login() -> Html {
-    let history = use_history().unwrap();
+    let history = use_navigator().unwrap();
     let is_signup = use_state(|| true);
     let onchange_signup = {
         let is_signup = is_signup.clone();
@@ -36,7 +36,7 @@ pub fn login() -> Html {
     let onsubmit = {
         let is_signup = is_signup.clone();
         let history = history.clone();
-        Callback::from(move |e: FocusEvent| {
+        Callback::from(move |e: SubmitEvent| {
             e.prevent_default();
             let target = e.target().unwrap();
             let value: &JsValue = target.as_ref();
@@ -54,7 +54,7 @@ pub fn login() -> Html {
                 console::log_1(&result);
                 let value: Value = result.into_serde().unwrap();
                 if value.get("status") == Some(&json!{"success"}) {
-                    history.push(Route::Me);
+                    history.push(&Route::Me);
                 } else {
                     let win = window().unwrap();
                     win.alert_with_message(&value.get("message").unwrap().to_string());

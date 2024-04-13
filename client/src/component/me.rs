@@ -1,5 +1,5 @@
 use wasm_bindgen_futures::spawn_local;
-use yew::{prelude::{function_component, html}, use_context};
+use yew::{prelude::{function_component, html}, use_context, Html};
 use js_sys::{JSON::stringify_with_replacer_and_space};
 use yew_router::prelude::{Redirect};
 use wasm_bindgen::{JsValue};
@@ -41,9 +41,10 @@ pub fn me() -> Html {
         Some(u) => JsValue::from_serde(&u).unwrap(),
         None => JsValue::NULL,
     };
+    let stringified_user = stringify_with_replacer_and_space(&user_obj, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap();
     html!{
         <div>
-            <pre>{stringify_with_replacer_and_space(&user_obj, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap()}</pre>
+            <pre>{stringified_user.as_string().unwrap_or_default()}</pre>
         </div>
     }
 }

@@ -1,5 +1,10 @@
 {
     "yaml.schemas": {
         "https://json.schemastore.org/github-workflow.json": "${workspaceFolder}/.github/workflows/build.yml"
+    },
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#0F2F4D",
+        "titleBar.activeBackground": "#14426B",
+        "titleBar.activeForeground": "#FAFCFE"
     }
 }

@@ -7,7 +7,7 @@ use crate::component::{ Header, Me };
 
 
 
-fn switch(routes: &Route) -> Html {
+fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <Home/> },
         Route::Login => html! { <Login/> },
@@ -26,7 +26,7 @@ pub fn App(props: &AppProps) -> Html {
         }}>
             <BrowserRouter>
                 <Header/>
-                <Switch<Route> render={Switch::render(switch)} />
+                <Switch<Route> render={switch} />
             </BrowserRouter>
         </ContextProvider<AppContext>>
     }

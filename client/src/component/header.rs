@@ -9,17 +9,17 @@ pub fn header() -> Html {
     html! {
         <nav>
             <Link<Route> to={Route::Home} classes={
-                classes!((location.route() == Some(Route::Home)).then(|| "active"))
+                classes!((location.path() == Route::Home.to_path()).then(|| "active"))
             }>
                 {"Home"}
             </Link<Route>>
             <Link<Route> to={Route::Login} classes={
-                classes!((location.route() == Some(Route::Login)).then(|| "active"))
+                classes!((location.path() == Route::Login.to_path()).then(|| "active"))
             }>
                 {"Login"}
             </Link<Route>>
             <Link<Route> to={Route::Me} classes={
-                classes!((location.route() == Some(Route::Me)).then(|| "active"))
+                classes!((location.path() == Route::Me.to_path()).then(|| "active"))
             }>
                 {"Me"}
             </Link<Route>>

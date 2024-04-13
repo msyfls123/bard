@@ -35,7 +35,7 @@ impl Component for Graph {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
        
-        let onclick_fetch_btn = link.callback_future_once(|_| {
+        let onclick_fetch_btn = link.callback_future(|_| {
             async {
                 let result = graph::get_vertex_data().await.unwrap();
                 Msg::Vertex(result)
@@ -48,7 +48,7 @@ impl Component for Graph {
                 { if self.vertex_data.is_some() {
                     let vertex_json = self.vertex_data.to_owned().unwrap();
                     let vertex_text = stringify_with_replacer_and_space(&vertex_json, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap();
-                    html! { <pre>{vertex_text}</pre>}
+                    html! { <pre>{vertex_text.as_string().unwrap_or_default()}</pre>}
                 } else {
                     html!{}
                 }}

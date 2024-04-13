@@ -2,7 +2,7 @@ use js_sys::Promise;
 use serde_json::{Value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
-use yew::{prelude::{function_component, html}, Html, Properties, use_context, use_effect, use_state, use_effect_with_deps};
+use yew::{prelude::function_component, Html, html, use_context, use_state, use_effect_with};
 use web_sys::{console};
 use serde_wasm_bindgen::from_value;
 use serde::{Deserialize};
@@ -32,7 +32,8 @@ pub fn bucket() -> Html {
         let list_fetch_in_content = list_fetch_in_content.clone();
         let list_clone = list.clone();
         let fetched_clone = fetched.clone();
-        use_effect_with_deps(
+        use_effect_with(
+            *fetched,
             move |&fetched| {
                 let cleanup = || {};
                 if fetched {
@@ -49,7 +50,6 @@ pub fn bucket() -> Html {
                 });
                 cleanup
             },
-            *fetched
         )
     }
 

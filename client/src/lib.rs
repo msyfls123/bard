@@ -6,6 +6,7 @@ use web_sys::{console, window};
 use js_sys::{Reflect, Function, Object};
 use constants::auth::User;
 
+
 mod app;
 mod component;
 mod helpers;
@@ -34,11 +35,11 @@ pub fn run_app(props: Object) -> Result<(), JsValue> {
     let list_bucket: Function = Reflect::get(&props, &JsValue::from_str("listBucket")).unwrap().into();
     let user_obj: JsValue = Reflect::get(&props, &JsValue::from_str("user")).unwrap();
     let user: Option<User> = helpers::user::parse_user(user_obj);
-    yew::start_app_with_props_in_element::<app::Main>(element, AppProps {
+    yew::Renderer::<app::Main>::with_root_and_props(element, AppProps {
         upload_file,
         list_bucket,
         user,
-    });
+    }).render();
 
     Ok(())
 }
