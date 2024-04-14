@@ -6,6 +6,7 @@ use yew::{prelude::function_component, Html, html, use_context, use_state, use_e
 use web_sys::{console};
 use serde_wasm_bindgen::from_value;
 use serde::{Deserialize};
+use chrono::{Utc, DateTime};
 
 use crate::constants::app::AppContext;
 
@@ -13,6 +14,7 @@ use crate::constants::app::AppContext;
 pub struct File {
     Key: Value,
     Size: Value,
+    LastModified: Value,
 }
 
 #[derive(Deserialize)]
@@ -51,8 +53,13 @@ pub fn bucket(props: &BucketProps) -> Html {
                 let promise = Promise::from(result);
                 let data = JsFuture::from(promise).await.unwrap();
                 console::log_2(&JsValue::from_str("data"), &data);
+
                 let info: BucketInfo = from_value(data).unwrap();
-                list_clone.set(Some(info.Contents));
+                let mut contents = info.Contents;
+                contents.sort_by_key(|file| file.LastModified.as_str().unwrap().parse::<DateTime<Utc>>().unwrap());
+                contents.reverse();
+                list_clone.set(Some(contents));
+
                 fetched_clone.set(1);
                 is_loading_clone.set(false);
             });
@@ -85,6 +92,7 @@ pub fn bucket(props: &BucketProps) -> Html {
                                 <tr>
                                     <th>{"File"}</th>
                                     <th>{"Size (bytes)"}</th>
+                                    <th>{"Modified Time"}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,6 +115,11 @@ fn file_item(file: &File) -> Html {
     let file_size = file.Size.as_str().unwrap();
     let href = format!("https://cdn.ebichu.cc/{}", file.Key.as_str().unwrap());
     let file_key2 = file.Key.clone();
+
+    let time = file.LastModified.as_str().unwrap();
+    let time_parsed: DateTime<Utc> = time.parse().unwrap();
+    let time_display = format!("{}", time_parsed.format("%Y-%m-%d %H:%M:%S"));
+
     html! { <tr>
         <td>
             <a href={href.to_owned()} target="_blank">
@@ -115,6 +128,9 @@ fn file_item(file: &File) -> Html {
         </td>
         <td>
             {file_size}
+        </td>
+        <td>
+            {time_display}
         </td>
     </tr> }
 }
