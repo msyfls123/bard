@@ -9,7 +9,7 @@ use crate::component::bucket::Bucket;
 use crate::constants::app::AppContext;
 
 pub struct HomeInner {
-    value: i64,
+    refresh_index: i64,
     upload_result: Option<JsValue>,
 }
 
@@ -29,17 +29,18 @@ impl Component for HomeInner {
     type Properties = AppProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-        HomeInner { value: 0, upload_result: None }
+        HomeInner { refresh_index: 1, upload_result: None }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::AddOne => {
-                self.value += 1;
+                self.refresh_index += 1;
                 true
             },
             Msg::Upload(value) => {
                 self.upload_result = Some(value);
+                self.refresh_index += 1;
                 true
             },
             Msg::FileChange(e) => {
@@ -72,7 +73,7 @@ impl Component for HomeInner {
         html! {
             <div>
               <div class="hidden">
-                <p>{ "count " } { self.value } </p>
+                <p>{ "refresh index " } { self.refresh_index } </p>
                 <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
                 <p>{ "Hello world!" }</p>
                 <form class="hidden" method="post" enctype="multipart/form-data" action="/upload">
@@ -81,7 +82,7 @@ impl Component for HomeInner {
                 </form>
                 <Graph/>
               </div>
-              <Bucket/>
+              <Bucket refresh_index={self.refresh_index as usize}/>
               <h2>{"Upload"}</h2>
               <input type="file" onchange={link.callback(|e| Msg::FileChange(e))}/>
               <p>
