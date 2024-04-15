@@ -1,4 +1,4 @@
-use js_sys::Promise;
+use js_sys::{JsString, Number, Promise};
 use serde_json::{Value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
@@ -81,18 +81,18 @@ pub fn bucket(props: &BucketProps) -> Html {
     html! {
         <div>
             <h2>{"Bucket"}</h2>
-            <ul>
+            <div>
             {
                 if *is_loading {
                     html! { "loading" }
                 } else if list.is_some() {
                     html! {
-                        <table>
+                        <table class="bucket">
                             <thead>
                                 <tr>
-                                    <th>{"File"}</th>
-                                    <th>{"Size (bytes)"}</th>
-                                    <th>{"Modified Time"}</th>
+                                    <th class="file">{"File"}</th>
+                                    <th class="size">{"Size (bytes)"}</th>
+                                    <th class="time">{"Modified Time"}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -106,13 +106,14 @@ pub fn bucket(props: &BucketProps) -> Html {
                 }
             }
                 
-            </ul>
+            </div>
         </div>
     }
 }
 
 fn file_item(file: &File) -> Html {
-    let file_size = file.Size.as_str().unwrap();
+    let file_size = file.Size.as_str().unwrap().parse::<u32>().unwrap();
+    let size_display = Number::from(file_size).to_locale_string("en-US");
     let href = format!("https://cdn.ebichu.cc/{}", file.Key.as_str().unwrap());
     let file_key2 = file.Key.clone();
 
@@ -121,15 +122,15 @@ fn file_item(file: &File) -> Html {
     let time_display = format!("{}", time_parsed.format("%Y-%m-%d %H:%M:%S"));
 
     html! { <tr>
-        <td>
+        <td class="file">
             <a href={href.to_owned()} target="_blank">
                 {file_key2.as_str().unwrap()}
             </a>
         </td>
-        <td>
-            {file_size}
+        <td class="size">
+            {size_display.as_string().unwrap_or_default()}
         </td>
-        <td>
+        <td class="time">
             {time_display}
         </td>
     </tr> }

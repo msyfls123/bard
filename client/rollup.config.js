@@ -26,7 +26,7 @@ export default {
         dir: '../static',
         format: 'iife',
         assetFileNames: '[name]-[hash][extname]',
-        sourcemap: hot,
+        sourcemap: !hot,
     },
     treeshake: !hot,
     plugins,
