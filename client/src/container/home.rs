@@ -1,22 +1,29 @@
-use js_sys::{Function, Promise, JSON::stringify_with_replacer_and_space};
-use wasm_bindgen::{JsValue, prelude::Closure};
-use wasm_bindgen_futures::{JsFuture, spawn_local};
+use chrono::Utc;
+use js_sys::Function;
+use wasm_bindgen::JsValue;
 use web_sys::console;
 use yew::{prelude::*, virtual_dom::VNode,function_component};
 
 use crate::component::graph::Graph;
 use crate::component::bucket::Bucket;
+use crate::component::Uploader;
 use crate::constants::app::AppContext;
+
+fn get_now() -> String {
+    let now = Utc::now();
+    let time: String = format!("{}", now);
+    return time
+}
 
 pub struct HomeInner {
     refresh_index: i64,
-    upload_result: Option<JsValue>,
+    input_keys: Vec<String>,
 }
 
 pub enum Msg {
-    AddOne,
-    FileChange(Event),
-    Upload(JsValue),
+    Refresh,
+    UploadAddOne,
+    UploadEnd,
 }
 
 #[derive(Properties, PartialEq)]
@@ -29,52 +36,39 @@ impl Component for HomeInner {
     type Properties = AppProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-        HomeInner { refresh_index: 1, upload_result: None }
+        HomeInner { refresh_index: 1, input_keys: vec!{get_now()} }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::AddOne => {
+            Msg::Refresh => {
                 self.refresh_index += 1;
                 true
             },
-            Msg::Upload(value) => {
-                self.upload_result = Some(value);
+            Msg::UploadAddOne => {
+                self.input_keys = [vec!{get_now()}, self.input_keys.to_owned()].concat();
+                console::log_1(&JsValue::from_str("upload start"));
+                true
+            },
+            Msg::UploadEnd => {
+                console::log_1(&JsValue::from_str("upload end"));
                 self.refresh_index += 1;
                 true
             },
-            Msg::FileChange(e) => {
-                let callback = ctx.link().callback(|value: JsValue| {
-                    Msg::Upload(value)
-                });
-                let func = &ctx.props().upload_file;
-                let result = func.call1(&JsValue::NULL, e.as_ref()).unwrap();
-                let promise = Promise::from(result);
-                let closure = Closure::once(Box::new(move |value: JsValue| {
-                    console::log_1(&value);
-                    callback.emit(value);
-                }) as Box<dyn FnMut(JsValue)>);
-                let promise = promise.then(&closure);
-                closure.forget();
-                let future = JsFuture::from(promise);
-                spawn_local(async {
-                    match future.await {
-                        Ok(_res) => {},
-                        Err(err) => console::error_1(&err),
-                    };
-                });
-                true
-            }
         }
     }
 
     fn view(&self, context: &Context<Self>) -> VNode {
         let link = context.link();
+        let list = self.input_keys.clone();
+        let upload_start = link.callback(|_| Msg::UploadAddOne);
+        let upload_end = link.callback(|_| Msg::UploadEnd);
+
         html! {
             <div>
               <div class="hidden">
                 <p>{ "refresh index " } { self.refresh_index } </p>
-                <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
+                <button onclick={link.callback(|_| Msg::Refresh)}>{ "+1" }</button>
                 <p>{ "Hello world!" }</p>
                 <form class="hidden" method="post" enctype="multipart/form-data" action="/upload">
                     <input type="file" name="file"/>
@@ -84,16 +78,15 @@ impl Component for HomeInner {
               </div>
               <Bucket refresh_index={self.refresh_index as usize}/>
               <h2>{"Upload"}</h2>
-              <input type="file" onchange={link.callback(|e| Msg::FileChange(e))}/>
-              <p>
-                { if self.upload_result.is_some() {
-                    let upload_json = self.upload_result.to_owned().unwrap();
-                    let upload_text = stringify_with_replacer_and_space(&upload_json, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap();
-                    html! { <pre>{upload_text.as_string().unwrap_or_default()}</pre>}
-                } else {
-                    html!{}
-                }}
-              </p>
+              { list.into_iter().map(|i| html! {
+                <div key={i.clone()}>
+                    {i.clone()}
+                    <Uploader
+                        on_upload_start={upload_start.clone()}
+                        on_upload_end={upload_end.clone()}
+                    />
+                </div>
+            }).collect::<Html>()}
             </div>
         }
     }
