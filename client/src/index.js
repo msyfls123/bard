@@ -25,7 +25,7 @@ const cos = new COS({
   }
 });
 
-function handleFileChange(e) {
+function handleFileChange(e, progressCb) {
   const file = e.target.files[0];
   if (!file) {
     return Promise.reject('no file');
@@ -40,6 +40,9 @@ function handleFileChange(e) {
         Body: file,
         onProgress: function(progressData) {
           console.log('percentage', JSON.stringify(progressData));
+          if (progressCb) {
+            progressCb(progressData)
+          }
         }
       },
       function(err, data) {

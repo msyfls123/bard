@@ -1,3 +1,4 @@
+
 nav
   a
     margin: 20px
@@ -32,3 +33,52 @@ body
   .time
   .size
     font-variant: all-small-caps
+
+.upload-item
+  margin: 10px 0
+  padding: 10px
+  border-width: thin
+  border-style: dashed
+  border-color: var(--grey-2_5, rgba(20,30,41,0.12))
+  .progress
+    --circle-radius: 50px
+    --circle-border: 10px
+    position: relative
+    .outer
+      width: calc(2 * var(--circle-radius))
+      height: calc(2 * var(--circle-radius))
+      padding: var(--circle-border)
+      box-shadow: 6px 6px 10px -1px rgba(#000, 0.15),
+                  -6px -6px 10px -1px rgba(#fff, 0.7)
+      border-radius: 50%
+      box-sizing: border-box
+    .inner
+      height: 100%
+      display: flex
+      align-items: center
+      justify-content: center
+      border-radius: 50%
+      box-shadow: inset 4px 4px 6px -1px rgba(#000, 0.2),
+                  inset -4px -4px 6px -1px rgba(#fff, 0.7),
+                  -0.5px -0.5px 0 rgba(#fff, 1),
+                  0.5px 0.5px 0 rgba(#000, 0.15),
+                  0 12px 10px -10px rgba(#000, 0.05)
+    .num
+      font-family: 'Courier New', Courier, monospace
+      color: #555
+      font-size: 18px
+
+  .progress-circle
+    position: absolute
+    top: 0
+    left: 0
+    circle
+      --circle: 283
+      --percentage: 0
+      fill: none
+      transform: rotate(-90deg)
+      transform-origin: center
+      stroke-width: 10px
+      stroke-dasharray: var(--circle)
+      stroke-dashoffset: calc(var(--circle) * (100 - var(--percentage)) / 100)
+      transition: all 0.5s ease-in-out
