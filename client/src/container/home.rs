@@ -80,7 +80,6 @@ impl Component for HomeInner {
               <h2>{"Upload"}</h2>
               { list.into_iter().map(|i| html! {
                 <div key={i.clone()}>
-                    {i.clone()}
                     <Uploader
                         on_upload_start={upload_start.clone()}
                         on_upload_end={upload_end.clone()}

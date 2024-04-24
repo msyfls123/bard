@@ -2,7 +2,7 @@ use serde_wasm_bindgen::from_value;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
 use web_sys::{console, Event, HtmlInputElement};
 use wasm_bindgen::{closure::Closure, JsCast, JsValue};
-use yew::{ html, prelude::function_component, use_callback, use_context, use_memo, use_state, Callback, Html, Properties};
+use yew::{ html, prelude::function_component, use_callback, use_context, use_memo, use_state, Callback, Html, Properties, UseStateHandle};
 use js_sys::{Promise, JSON::stringify_with_replacer_and_space};
 use serde_json::{Value};
 use serde::{Deserialize};
@@ -13,6 +13,11 @@ use crate::constants::app::AppContext;
 pub struct Progress {
     percent: Value,
     total: Value
+}
+
+#[derive(Deserialize, PartialEq, Clone)]
+pub struct UploadResult {
+    Location: Value,
 }
 
 #[derive(Properties, PartialEq)]
@@ -27,9 +32,11 @@ pub fn uploader(props: &UploaderProps) -> Html {
     let app_ctx = use_context::<AppContext>().expect("no ctx found");
     let cos_upload = app_ctx.upload_file;
     // state
-    let upload_result = use_state(|| None);
+    let upload_result: UseStateHandle<Option<JsValue>> = use_state(|| None);
     let is_uploading = use_state(|| false);
+    let filename = use_state(|| None);
     let progress = use_state(|| 0f64);
+    // computed
     let percentage = use_memo(progress.clone(), |progress| {
         let progress = *progress.clone();
         format!("{:.1}%", progress * 100.0f64)
@@ -38,12 +45,26 @@ pub fn uploader(props: &UploaderProps) -> Html {
         let progress = *progress.clone();
         format!("--percentage: {:.1};", progress * 100.0f64)
     });
+    let location = use_memo(upload_result.clone(), |res| {
+        match res.as_ref() {
+            Some(v) => {
+                let parsed: UploadResult = from_value(v.to_owned()).unwrap();
+                "https://".to_string() + parsed.Location.as_str().unwrap_or_default()
+            },
+            None => "".to_string()
+        }
+    });
     // callbacks
     let upload_start = use_callback(
-        (props.on_upload_start.clone(), is_uploading.clone()),
-        move |_, (on_start, uploading)| {
+        (props.on_upload_start.clone(), is_uploading.clone(), filename.clone()),
+        move |e: Event, (on_start, uploading, filename)| {
             on_start.emit(());
             uploading.set(true);
+
+            let target = e.target().unwrap();
+            let input_el: HtmlInputElement = target.dyn_into().unwrap();
+            let option_file = input_el.files().unwrap().item(0);
+            filename.set(option_file.map(|file| file.name()));
         }
     );
     let upload_end = use_callback(
@@ -57,7 +78,7 @@ pub fn uploader(props: &UploaderProps) -> Html {
     let on_upload = use_callback(
         (upload_end.clone(), progress.clone()),
         move |e: Event, (upload_cb, progress_state)| {
-            upload_start.emit(());
+            upload_start.emit(e.clone());
 
             let progress_state = progress_state.clone();
             let closure = Closure::wrap(Box::new(move |payload: JsValue| {
@@ -99,13 +120,17 @@ pub fn uploader(props: &UploaderProps) -> Html {
 
     html! {
         <div class="upload-item">
-            
-            
-            {if let Some(data) = upload_result.as_ref() {
-                let upload_text = stringify_with_replacer_and_space(&data, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap();
-                html! { <div>
-                    { "Upload success" }
-                    <pre>{upload_text.as_string().unwrap_or_default()}</pre>
+            {if let Some(_) = upload_result.as_ref() {
+                // let upload_text = stringify_with_replacer_and_space(&data, &JsValue::NULL, &JsValue::from_f64(4.0)).unwrap();
+                html! { <div class="file-link">
+                    <i class="icon-success fa-solid fa-check"></i>
+                    <a target="_blank" href={<std::string::String as Clone>::clone(&location)}>
+                        {if let Some(name) = filename.as_ref() {
+                            html!{ <span> {{ name }} </span> }
+                        } else {
+                            html!{ <span> {"[Untitled]"} </span> }
+                        }}
+                    </a>
                 </div> }
             } else if *is_uploading {
                 html! {
@@ -136,14 +161,16 @@ pub fn uploader(props: &UploaderProps) -> Html {
                 }
             } else {
                 html! {
-                    <input type="file" onchange={move |e: Event| {
-                        let target = e.target().unwrap();
-                        let input_el: HtmlInputElement = target.dyn_into().unwrap();
-                        let option_file = input_el.files().unwrap().item(0);
-                        if let Some(file) = option_file {
-                            on_upload.emit(e)
-                        }
-                    }} />
+                    <div class="upload-input">
+                        <input type="file" onchange={move |e: Event| {
+                            let target = e.target().unwrap();
+                            let input_el: HtmlInputElement = target.dyn_into().unwrap();
+                            let option_file = input_el.files().unwrap().item(0);
+                            if let Some(file) = option_file {
+                                on_upload.emit(e)
+                            }
+                        }} />
+                    </div>
                 }
             }}
         </div>
