@@ -76,7 +76,6 @@ impl Component for HomeInner {
                 </form>
                 <Graph/>
               </div>
-              <Bucket refresh_index={self.refresh_index as usize}/>
               <h2>{"Upload"}</h2>
               { list.into_iter().map(|i| html! {
                 <div key={i.clone()}>
@@ -85,7 +84,8 @@ impl Component for HomeInner {
                         on_upload_end={upload_end.clone()}
                     />
                 </div>
-            }).collect::<Html>()}
+              }).collect::<Html>()}
+              <Bucket refresh_index={self.refresh_index as usize}/>
             </div>
         }
     }

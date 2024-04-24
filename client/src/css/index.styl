@@ -1,6 +1,12 @@
 :root
   --success: #30C157
   --blue: #0067e5
+  --grey-1-b: rgba(249, 249, 250, 1)
+  --grey-2: rgba(20, 30, 41, 0.04)
+  --grey-5_5: rgba(20, 30, 41, 0.76)
+  --grey-25-b: rgba(235,235,236,1)
+  --grey-6: rgba(20,30,41,0.92)
+
 nav
   a
     margin: 20px
@@ -21,6 +27,8 @@ body
 
 .bucket
   border-collapse: collapse
+  th
+    padding-bottom: 8px
   td
     border: 1px solid #ddd
     padding: 5px
@@ -35,6 +43,20 @@ body
   .time
   .size
     font-variant: all-small-caps
+.item-count
+  font-variant: diagonal-fractions
+.bucket-paginator
+  margin: 20px 0
+  height: 32px
+  font-size: medium
+  min-width: 50px
+  text-align: center
+  color: var(--grey-6, rgba(20,30,41,0.92))
+  // background: var(--grey-25-b, rgba(235,235,236,1))
+  border-radius: 6px
+  border: none
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.24)
+  cursor: pointer
 
 .upload-item
   margin: 10px 0
