@@ -161,7 +161,7 @@ pub fn uploader(props: &UploaderProps) -> Html {
                 }
             } else {
                 html! {
-                    <div class="upload-input">
+                    <div class="upload-input fa-solid fa-file">
                         <input type="file" onchange={move |e: Event| {
                             let target = e.target().unwrap();
                             let input_el: HtmlInputElement = target.dyn_into().unwrap();

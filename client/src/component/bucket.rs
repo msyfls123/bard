@@ -101,13 +101,13 @@ pub fn bucket(props: &BucketProps) -> Html {
                     html! { <span class="item-count">{" ("} {l.len()} {")"}</span> }
                 } else { html! {} }}
             </h2>
-            <div>
+            <div class="bucket">
             {
                 if *is_loading {
                     html! { "loading" }
                 } else if list.is_some() {
                     html! {<>
-                        <table class="bucket">
+                        <table>
                             <thead>
                                 <tr>
                                     <th class="file">{"File"}</th>
