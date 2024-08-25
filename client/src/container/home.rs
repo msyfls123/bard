@@ -8,6 +8,7 @@ use crate::component::graph::Graph;
 use crate::component::bucket::Bucket;
 use crate::component::Uploader;
 use crate::constants::app::AppContext;
+use crate::component::note::Note;
 
 fn get_now() -> String {
     let now = Utc::now();
@@ -76,6 +77,8 @@ impl Component for HomeInner {
                 </form>
                 <Graph/>
               </div>
+              <h2>{"Note"}</h2>
+              <Note />
               <h2>{"Upload"}</h2>
               { list.into_iter().map(|i| html! {
                 <div key={i.clone()}>
