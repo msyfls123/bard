@@ -1,8 +1,11 @@
 # Setup
+
+Download `build.zip` from GitHub Actions.
+
 ```shell
-unzip build.zip -d ./bard
-mkdir store
-cd bard
+cp -r app app-bak
+unzip build.zip -d ./app
+chmod +x app/target/release/server
 ```
 
 # Build
