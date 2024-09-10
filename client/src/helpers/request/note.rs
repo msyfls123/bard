@@ -99,3 +99,22 @@ pub async fn fetch_notes(start_id: Option<String>, limit: usize) -> Result<JsVal
     let promise_data = res.json().unwrap();
     JsFuture::from(promise_data).await
 }
+
+pub async fn delete_note(id: &str) -> Result<JsValue, JsValue> {
+    let win = window().unwrap();
+    let mut options = RequestInit::new();
+
+    let headers = json!({
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    });
+    options.headers(&JsValue::from_serde(&headers).unwrap());
+    options.method("delete");
+
+    let req = Request::new_with_str_and_init(&format!("/vertex/{}", id), &options).unwrap();
+    let fetch_res = win.fetch_with_request(&req);
+    let raw_res = JsFuture::from(fetch_res).await.unwrap();
+    let res: Response = raw_res.dyn_into().unwrap();
+    let promise_data = res.json().unwrap();
+    JsFuture::from(promise_data).await
+}

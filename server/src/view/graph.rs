@@ -78,6 +78,26 @@ pub fn create_vertex(graph_store: &State<GraphStore>, obj: Json<CreateVertexPayl
     
 }
 
+#[delete("/vertex/<id>", format="json")]
+pub fn delete_vertex(graph_store: &State<GraphStore>, id: Uuid) -> Json<Value> {
+    let result = graph_store.delete_vertex(id);
+    match result {
+        Ok(()) => {
+            let response = json!({
+                "code": 0u32,
+            });
+            Json(response)
+        },
+        Err(err) => {
+            let response = json!({
+                "code": 1u32,
+                "err": format!("{}", err),
+            });
+            Json(response)
+        }
+    }
+}
+
 #[get("/vertex", format="json")]
 pub fn get_vertex(graph_store: &State<GraphStore>) -> Json<Value> {
     let vertices = graph_store.get_all_vertices();

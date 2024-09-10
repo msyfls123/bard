@@ -111,4 +111,9 @@ impl GraphStore {
       let edge_query = SpecificVertexQuery::single(vertex_id).outbound().t(Identifier::new(t).unwrap());
       self.store.get_all_edge_properties(edge_query.into()).unwrap()
     }
+
+    pub fn delete_vertex(&self, vertex_id: Uuid) -> DbResult<()> {
+      let vertex_query = SpecificVertexQuery::single(vertex_id);
+      self.store.delete_vertices(vertex_query.into())
+    }
 }
