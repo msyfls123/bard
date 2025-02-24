@@ -26,7 +26,8 @@ pub struct  BucketInfo {
 
 #[derive(Properties, PartialEq)]
 pub struct BucketProps {
-    pub refresh_index: usize
+    pub refresh_index: usize,
+    pub prefix: String,
 }
 
 #[function_component(Bucket)]
@@ -34,6 +35,8 @@ pub fn bucket(props: &BucketProps) -> Html {
     // context
     let list_fetch_in_content = use_context::<AppContext>()
         .expect("no ctx list_fetch_in_content found").list_bucket;
+    // props
+    let prefix_clone = props.prefix.clone();
     // state
     let list = use_state(|| None);
     let fetched = use_state(|| 0);
@@ -62,9 +65,22 @@ pub fn bucket(props: &BucketProps) -> Html {
             }
             is_loading_clone.set(true);
             spawn_local(async move {
-                let result = list_fetch_in_content.call0(&JsValue::NULL).unwrap();
+                let result = list_fetch_in_content.call1(
+                    &JsValue::NULL,
+                    &JsValue::from_str(&prefix_clone)
+                ).unwrap();
                 let promise = Promise::from(result);
-                let data = JsFuture::from(promise).await.unwrap();
+                let mut data;
+                match JsFuture::from(promise).await {
+                    Ok(res) => {
+                        console::log_2(&JsValue::from_str("data"), &res);
+                        data = res;
+                    },
+                    Err(e) => {
+                        console::log_2(&JsValue::from_str("error"), &e);
+                        return
+                    }
+                }
                 console::log_2(&JsValue::from_str("data"), &data);
 
                 let info: BucketInfo = from_value(data).unwrap();

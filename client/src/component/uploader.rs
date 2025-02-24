@@ -24,6 +24,7 @@ pub struct UploadResult {
 pub struct UploaderProps {
     pub on_upload_start: Callback<()>,
     pub on_upload_end: Callback<()>,
+    pub prefix: String,
 }
 
 #[function_component(Uploader)]
@@ -31,6 +32,7 @@ pub fn uploader(props: &UploaderProps) -> Html {
     // context
     let app_ctx = use_context::<AppContext>().expect("no ctx found");
     let cos_upload = app_ctx.upload_file;
+    let prefix_clone = props.prefix.clone();
     // state
     let upload_result: UseStateHandle<Option<JsValue>> = use_state(|| None);
     let is_uploading = use_state(|| false);
@@ -89,9 +91,10 @@ pub fn uploader(props: &UploaderProps) -> Html {
             }) as Box<dyn FnMut(JsValue)>);
 
             // invoke upload
-            let result = cos_upload.call2(
+            let result = cos_upload.call3(
                 &JsValue::NULL,
                 e.as_ref(),
+                &JsValue::from_str(&prefix_clone),
                 closure.as_ref().unchecked_ref()
             ).unwrap();
 

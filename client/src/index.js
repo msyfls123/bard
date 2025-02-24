@@ -25,7 +25,7 @@ const cos = new COS({
   }
 });
 
-function handleFileChange(e, progressCb) {
+function handleFileChange(e, prefix, progressCb) {
   const file = e.target.files[0];
   if (!file) {
     return Promise.reject('no file');
@@ -36,7 +36,7 @@ function handleFileChange(e, progressCb) {
       {
         Bucket: 'kimi-1251502833',
         Region: 'ap-beijing',
-        Key: `cos-test/${name}`,
+        Key: `cos-test/${prefix}/${name}`,
         Body: file,
         onProgress: function(progressData) {
           console.log('percentage', JSON.stringify(progressData));
@@ -58,12 +58,12 @@ function handleFileChange(e, progressCb) {
   })
 }
 
-function listBucket() {
+function listBucket(prefix) {
   return new Promise((resolve, reject) => {
     cos.getBucket({
       Bucket: 'kimi-1251502833', /* 填入您自己的存储桶，必须字段 */
       Region: 'ap-beijing',  /* 存储桶所在地域，例如ap-beijing，必须字段 */
-      Prefix: 'cos-test/',              /* Prefix表示列出的object的key以prefix开始，非必须 */
+      Prefix: prefix ? `cos-test/${prefix}/` : 'cos-test/',              /* Prefix表示列出的object的key以prefix开始，非必须 */
       Delimiter: '/',            /* Deliter表示分隔符, 设置为/表示列出当前目录下的object, 设置为空表示列出所有的object，非必须 */
     }, function(err, data) {
       if (err) {

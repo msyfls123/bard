@@ -4,7 +4,6 @@ use wasm_bindgen::JsValue;
 use web_sys::console;
 use yew::{prelude::*, virtual_dom::VNode,function_component};
 
-use crate::component::graph::Graph;
 use crate::component::bucket::Bucket;
 use crate::component::Uploader;
 use crate::constants::app::AppContext;
@@ -16,7 +15,7 @@ fn get_now() -> String {
     return time
 }
 
-pub struct HomeInner {
+pub struct ContainerInner {
     refresh_index: i64,
     input_keys: Vec<String>,
 }
@@ -29,15 +28,16 @@ pub enum Msg {
 
 #[derive(Properties, PartialEq)]
 pub struct AppProps {
-    pub upload_file: Function
+    pub upload_file: Function,
+    pub prefix: String,
 }
 
-impl Component for HomeInner {
+impl Component for ContainerInner {
     type Message = Msg;
     type Properties = AppProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-        HomeInner { refresh_index: 1, input_keys: vec!{get_now()} }
+        ContainerInner { refresh_index: 1, input_keys: vec!{get_now()} }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -64,33 +64,24 @@ impl Component for HomeInner {
         let list = self.input_keys.clone();
         let upload_start = link.callback(|_| Msg::UploadAddOne);
         let upload_end = link.callback(|_| Msg::UploadEnd);
+        let prefix_clone = context.props().prefix.clone();
 
         html! {
             <div>
-              <div class="hidden">
-                <p>{ "refresh index " } { self.refresh_index } </p>
-                <button onclick={link.callback(|_| Msg::Refresh)}>{ "+1" }</button>
-                <p>{ "Hello world!" }</p>
-                <form class="hidden" method="post" enctype="multipart/form-data" action="/upload">
-                    <input type="file" name="file"/>
-                    <button type="submit">{"Submit"}</button>
-                </form>
-                <Graph/>
-              </div>
               <h2>{"Note"}</h2>
               <Note />
               <h2>{"Upload"}</h2>
               { list.into_iter().map(|i| html! {
                 <div key={i.clone()}>
                     <Uploader
-                        prefix=""
+                        prefix={prefix_clone.clone()}
                         on_upload_start={upload_start.clone()}
                         on_upload_end={upload_end.clone()}
                     />
                 </div>
               }).collect::<Html>()}
               <Bucket
-                prefix=""
+                prefix={prefix_clone}
                 refresh_index={self.refresh_index as usize}
               />
             </div>
@@ -98,8 +89,16 @@ impl Component for HomeInner {
     }
 }
 
-#[function_component(Home)]
-pub fn HomeHOC() -> Html {
+#[derive(Properties, PartialEq)]
+pub struct ContainerProps {
+    pub prefix: String,
+}
+
+#[function_component(Container)]
+pub fn ContainerHOC(props: &ContainerProps) -> Html {
     let app_ctx = use_context::<AppContext>().expect("no ctx found");
-    html! { <HomeInner upload_file={app_ctx.upload_file}/> }
+    html! { <ContainerInner
+        upload_file={app_ctx.upload_file}
+        prefix={props.prefix.clone()}
+    /> }
 }

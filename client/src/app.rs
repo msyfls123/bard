@@ -2,7 +2,7 @@ use yew::{prelude::*};
 use yew_router::prelude::*;
 use crate::constants::app::{AppContext, AppProps, Route};
 
-use crate::container::{ Home, Login };
+use crate::container::{ Home, Login, Container };
 use crate::component::{ Header, Me };
 
 
@@ -12,7 +12,7 @@ fn switch(routes: Route) -> Html {
         Route::Home => html! { <Home/> },
         Route::Login => html! { <Login/> },
         Route::Me => html! { <Me/> },
-        Route::Container { name } => html! { <div>{"Container: "} <>{name}</></div> },
+        Route::Container { name } => html! { <Container prefix={name} /> },
         Route::NotFound => html! { "404" },
     }
 }
