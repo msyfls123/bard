@@ -12,6 +12,7 @@ fn switch(routes: Route) -> Html {
         Route::Home => html! { <Home/> },
         Route::Login => html! { <Login/> },
         Route::Me => html! { <Me/> },
+        Route::Container { name } => html! { <div>{"Container: "} <>{name}</></div> },
         Route::NotFound => html! { "404" },
     }
 }

@@ -4,6 +4,7 @@ mod graph;
 mod file;
 mod auth;
 mod utils;
+mod general;
 
 pub fn get_routes() -> Vec<Route> {
   routes!{
@@ -24,5 +25,6 @@ pub fn get_routes() -> Vec<Route> {
     auth::me_api,
     auth::me,
     auth::login_page,
+    general::container,
   }
 }

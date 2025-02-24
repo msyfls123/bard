@@ -26,6 +26,8 @@ pub enum Route {
     Login,
     #[at("/me")]
     Me,
+    #[at("/container/:name")]
+    Container { name: String },
     #[not_found]
     #[at("/404")]
     NotFound,
