@@ -109,6 +109,7 @@ pub fn bucket(props: &BucketProps) -> Html {
 
     let list = list.as_ref();
     let current = current_page.clone();
+    let list_is_empty = list.unwrap_or(&vec!{}).len() == 0;
     html! {
         <div>
             <h2>
@@ -132,12 +133,22 @@ pub fn bucket(props: &BucketProps) -> Html {
                                 </tr>
                             </thead>
                             <tbody>
+                                {html! { if list.unwrap().len() > 0 {
                                 {for list.unwrap()
                                     [*current_page * CHUNK_SIZE..((*current_page + 1) * CHUNK_SIZE).min(list.unwrap().len())]
                                     .iter().map(|file| file_item(file))}
+                                } else {
+                                    <tr>
+                                        <td class="file">{"-"}</td>
+                                        <td class="size">{"-"}</td>
+                                        <td class="time">{"-"}</td>
+                                    </tr>
+                                }}}
                             </tbody>
                         </table>
-                        <select
+                        { html! { if list_is_empty {
+                            <></>
+                        } else {<select
                             class="bucket-paginator"
                             onchange={move |e: Event| {
                                 let target = e.target().unwrap();
@@ -155,7 +166,7 @@ pub fn bucket(props: &BucketProps) -> Html {
                                     </option>
                                 }
                             })}
-                        </select>
+                        </select>}} }
                     </>}
                 }  else {
                     html! { "no data" }

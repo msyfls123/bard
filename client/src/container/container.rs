@@ -68,8 +68,7 @@ impl Component for ContainerInner {
 
         html! {
             <div>
-              <h2>{"Note"}</h2>
-              <Note />
+              <h1 class="headline">{"Container | "}{prefix_clone.clone()}</h1>
               <h2>{"Upload"}</h2>
               { list.into_iter().map(|i| html! {
                 <div key={i.clone()}>
