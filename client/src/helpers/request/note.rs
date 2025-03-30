@@ -1,12 +1,13 @@
 use wasm_bindgen::{JsValue, JsCast};
 use wasm_bindgen_futures::{JsFuture};
-use web_sys::{window, Request, RequestInit, Response};
+use web_sys::{console, window, Request, RequestInit, Response};
 use serde::{Serialize, Deserialize};
-use js_sys::JSON;
+use js_sys::{JSON, Date};
 
 #[derive(Serialize)]
 pub struct NoteProperties {
     pub text: String,
+    pub timestamp: String,
 }
 
 #[derive(Serialize)]
@@ -24,6 +25,7 @@ pub struct FetchNotesQuery {
 pub struct  Note {
     pub id: String,
     pub text: String,
+    pub timestamp: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -40,10 +42,14 @@ pub async fn creat_note(text: &str) -> Result<JsValue, JsValue> {
     let win = window().unwrap();
     let mut options = RequestInit::new();
 
+    let now = Date::new_0();
+    let timestamp = now.get_time();
+
     let info = CreateNoteInfo {
         t: "note".to_string(),
         properties: NoteProperties {
             text: text.to_string(),
+            timestamp: timestamp.to_string(), 
         },
     };
     let json_obj = JsValue::from_serde(&info).unwrap();
@@ -72,7 +78,7 @@ pub async fn fetch_notes(start_id: Option<String>, limit: usize) -> Result<JsVal
 
     // query: "{\n  notes(limit: 10) {\n    id\n    text\n  }\n}"
     let query = format!(
-        "{{\n  notes(startId: {}, limit: {},) {{\n    id\n    text\n  }}\n}}",
+        "{{\n  notes(startId: {}, limit: {},) {{\n    id\n    text\n    timestamp\n  }}\n}}",
         start_id.map_or(String::from("null"), |v| format!(r#""{}""#, v)),
         limit
     );

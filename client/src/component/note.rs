@@ -5,7 +5,19 @@ use yew::{html, prelude::function_component, use_effect_with, use_state, Callbac
 use wasm_bindgen::{JsCast, JsValue};
 use crate::helpers::request::note::{creat_note, delete_note, fetch_notes, FetchNotesResponse};
 use wasm_bindgen_futures::{spawn_local, JsFuture};
-use js_sys::JSON::parse;
+use js_sys::{Date, Object, JSON::parse};
+
+fn parse_option_timestamp(timestamp: Option<String>) -> String {
+    match timestamp {
+        Some(t) => {
+            let str: String = parse(&t).unwrap().as_string().unwrap();
+            let stamp: f64 = str.parse().unwrap();
+            let date = Date::new(&JsValue::from_f64(stamp));
+            date.to_locale_string("zh-CN", &Object::new()).as_string().unwrap()
+        },
+        None => "".to_string(),
+    }
+}
 
 #[function_component(Note)]
 pub fn note() -> Html {
@@ -123,7 +135,10 @@ pub fn note() -> Html {
                         <span class="checked">
                             <i class="fa-solid fa-check"></i>
                         </span>
-                        <p class="content">{parse(&note.text.clone()).unwrap().as_string().unwrap()}</p>
+                        <div class="content">
+                            <p>{parse(&note.text.clone()).unwrap().as_string().unwrap()}</p>
+                            <sub class="timestamp">{parse_option_timestamp(note.timestamp.clone())}</sub>
+                        </div>
                         <div class="controls">
                             <button
                                 class="btn btn-copy"

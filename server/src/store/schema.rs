@@ -16,6 +16,7 @@ struct Man {
 struct Note {
     id: String,
     text: Option<String>,
+    timestamp: Option<String>,
 }
 
 #[graphql_object(context = GraphStore)]
@@ -65,6 +66,13 @@ impl Query {
                         id: v.vertex.id.hyphenated().to_string(),
                         text: v.props.iter().find_map(|i| {
                             if i.name.as_str() == "text" {
+                                Some(i.value.to_string())
+                            } else {
+                                None
+                            }
+                        }),
+                        timestamp: v.props.iter().find_map(|i| {
+                            if i.name.as_str() == "timestamp" {
                                 Some(i.value.to_string())
                             } else {
                                 None
