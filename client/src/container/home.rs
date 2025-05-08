@@ -69,7 +69,10 @@ impl Component for HomeInner {
             <div>
               <div class="hidden">
                 <p>{ "refresh index " } { self.refresh_index } </p>
+<<<<<<< Updated upstream
                 <button onclick={link.callback(|_| Msg::Refresh)}>{ "+1" }</button>
+=======
+>>>>>>> Stashed changes
                 <p>{ "Hello world!" }</p>
                 <form class="hidden" method="post" enctype="multipart/form-data" action="/upload">
                     <input type="file" name="file"/>
@@ -89,6 +92,13 @@ impl Component for HomeInner {
                     />
                 </div>
               }).collect::<Html>()}
+<<<<<<< Updated upstream
+=======
+              <button
+                class="btn-refresh fa fa-refresh"
+                onclick={link.callback(|_| Msg::Refresh)}
+              >{ " Bucket" }</button>
+>>>>>>> Stashed changes
               <Bucket
                 prefix=""
                 refresh_index={self.refresh_index as usize}
