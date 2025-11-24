@@ -1,20 +1,30 @@
-import './css/index.styl'
+import "./css/index.styl";
 
-import wasm from '../Cargo.toml';
+import wasm from "../Cargo.toml";
+
+const VALID_ORIGINS = ["https://vps.ebichu.cc", "https://void.ebichu.cc"];
+
+const getSTSUrl = () => {
+  const origin = location.origin;
+  if (VALID_ORIGINS.includes(origin)) {
+    return "/sts";
+  }
+  return "https://vps.ebichu.cc/sts";
+};
 
 const cos = new COS({
   getAuthorization: async (options, callback) => {
-    const url = 'https://void.ebichu.cc/sts';
+    const url = getSTSUrl();
     let data;
     try {
-      data = await fetch(url).then(res => res.json());
+      data = await fetch(url).then((res) => res.json());
     } catch (err) {
-      console.err('connect secret server error', err)
+      console.err("connect secret server error", err);
     }
     const { credentials, startTime, expiredTime } = data || {};
     if (!(data && credentials)) {
-      return console.error('data invalid:\n' + JSON.stringify(data, null, 2))
-    };
+      return console.error("data invalid:\n" + JSON.stringify(data, null, 2));
+    }
     callback({
       TmpSecretId: credentials.tmpSecretId,
       TmpSecretKey: credentials.tmpSecretKey,
@@ -22,63 +32,68 @@ const cos = new COS({
       StartTime: startTime,
       ExpiredTime: expiredTime,
     });
-  }
+  },
 });
 
 function handleFileChange(e, prefix, progressCb) {
   const file = e.target.files[0];
   if (!file) {
-    return Promise.reject('no file');
+    return Promise.reject("no file");
   }
   const name = file.name;
   return new Promise((resolve, reject) => {
     cos.putObject(
       {
-        Bucket: 'kimi-1251502833',
-        Region: 'ap-beijing',
+        Bucket: "kimi-1251502833",
+        Region: "ap-beijing",
         Key: `cos-test/${prefix}/${name}`,
         Body: file,
-        onProgress: function(progressData) {
-          console.log('percentage', JSON.stringify(progressData));
+        onProgress: function (progressData) {
+          console.log("percentage", JSON.stringify(progressData));
           if (progressCb) {
-            progressCb(progressData)
+            progressCb(progressData);
           }
-        }
+        },
       },
-      function(err, data) {
+      function (err, data) {
         if (err) {
           reject(err);
-          console.error('upload fail', err);
+          console.error("upload fail", err);
         } else {
           resolve(data);
-          console.info('upload success', data);
+          console.info("upload success", data);
         }
-      },
+      }
     );
-  })
+  });
 }
 
 function listBucket(prefix) {
   return new Promise((resolve, reject) => {
-    cos.getBucket({
-      Bucket: 'kimi-1251502833', /* 填入您自己的存储桶，必须字段 */
-      Region: 'ap-beijing',  /* 存储桶所在地域，例如ap-beijing，必须字段 */
-      Prefix: prefix ? `cos-test/${prefix}/` : 'cos-test/',              /* Prefix表示列出的object的key以prefix开始，非必须 */
-      Delimiter: '/',            /* Deliter表示分隔符, 设置为/表示列出当前目录下的object, 设置为空表示列出所有的object，非必须 */
-    }, function(err, data) {
-      if (err) {
-        reject(err);
-        console.error('list folder fail', err);
-      } else {
-        resolve(data);
-        console.info('list folder success', data);
+    cos.getBucket(
+      {
+        Bucket: "kimi-1251502833" /* 填入您自己的存储桶，必须字段 */,
+        Region: "ap-beijing" /* 存储桶所在地域，例如ap-beijing，必须字段 */,
+        Prefix: prefix
+          ? `cos-test/${prefix}/`
+          : "cos-test/" /* Prefix表示列出的object的key以prefix开始，非必须 */,
+        Delimiter:
+          "/" /* Deliter表示分隔符, 设置为/表示列出当前目录下的object, 设置为空表示列出所有的object，非必须 */,
+      },
+      function (err, data) {
+        if (err) {
+          reject(err);
+          console.error("list folder fail", err);
+        } else {
+          resolve(data);
+          console.info("list folder success", data);
+        }
       }
-    });
-  
-  })
+    );
+  });
 }
 
-window.listBucket = listBucket
+window.listBucket = listBucket;
 
 wasm().then(({ run_app }) => {
   run_app({
